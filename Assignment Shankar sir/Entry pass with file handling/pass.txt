@@ -1,0 +1,3 @@
+1, sree, kanyakumari, Student
+1, sree, kanyakumari, Student
+2, gokul, nagercoil, Employee
