@@ -1,0 +1,147 @@
+<html>
+  <head>
+    <title>Subgrid Real-World</title>
+    
+    <style>
+        section {
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    250px
+  );
+  gap: 1rem;
+  max-width: 1280px;
+  margin: 4rem auto 0;
+}
+
+.card {
+  display: grid;
+  border: 1px solid #cacaca;
+  border-radius: 6px;
+  padding: 16px;
+
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+
+}
+
+.card:last-child {
+  grid-template-rows: unset;
+}
+
+.flex {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #cacaca;
+}
+
+.flex h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.content {
+  font-size: 15px;
+  line-height: 22px;
+  margin-bottom: 1.5rem;
+}
+
+.action {
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: underline;
+  margin-top: 1rem;
+}
+
+.container {
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+body,
+html {
+  height: 100vh;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Blog Posts</h1>
+      <section>
+        <div class="card">
+          <div class="flex">
+            <h2>Morning Routines That Actually Stick</h2>
+            <img
+                src="https://picsum.photos/id/237/200"
+                width="48"
+                height="48"
+                alt=""
+            />
+          </div>
+          <div class="content">
+            A three-step ritual to jump-start focus before your first coffee. Get your things done while the world is still asleep!
+          </div>
+          <div class="action">Read more</div>
+        </div>
+        <div class="card">
+          <div class="flex">
+            <h2>Why Plants Make You Happier</h2>
+            <img
+                src="https://picsum.photos/id/230/200"
+                width="48"
+                height="48"
+                alt=""
+            />
+          </div>
+          <div class="content">
+            Science-backed reasons to add a little green to your workspace today.
+          </div>
+          <div class="action">Read more</div>
+        </div>
+        <div class="card">
+          <div class="flex">
+            <h2>
+              Five Podcasts You'll Binge This Weekend
+            </h2>
+            <img
+                src="https://picsum.photos/id/239/200"
+                width="48"
+                height="48"
+                alt=""
+            />
+          </div>
+          <div class="content">
+            Hand-picked shows for tech and stories.
+          </div>
+          <div class="action">Read more</div>
+        </div>
+        <div class="card">
+          <div class="flex">
+            <h2>Keyboard Shortcuts You will Use Daily</h2>
+            <img
+                src="https://picsum.photos/id/217/200"
+                width="48"
+                height="48"
+                alt=""
+            />
+          </div>
+          <div class="content">
+            Save precious seconds with simple combos for Mac, Windows, and Linux. Those shortcuts will boost your productivity!
+          </div>
+          <div class="action">Read more</div>
+        </div>
+      </section>
+    </div>
+  </body>
+
+</html>

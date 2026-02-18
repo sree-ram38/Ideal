@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Grid Layout Tutorial</title>
+        <link rel="stylesheet" href="styles.css">
+
+        <style>
+            body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.container div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: tomato;
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    padding: 20px;
+}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="box-1">1</div>
+            <div id="box-2">2</div>
+            <div id="box-3">3</div>
+            <div id="box-4">4</div>
+            <div id="box-5">5</div>
+            <div id="box-6">6</div>
+            <div id="box-7">7</div>
+            <div id="box-8">8</div>
+            <div id="box-9">9</div>
+        </div>
+    </body>
+</html>

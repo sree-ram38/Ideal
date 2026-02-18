@@ -1,0 +1,300 @@
+					SHORTCUT
+ctrl + shift + T = open the closed tab
+ctrl + / is used to comment the line in vscode
+shift + alt + F is used to format the code in order
+ctrl + D is used to select the same selected item
+ctrl + \ is used to open extra page in vscode itself
+ctrl + shift + i is used to inspect the particular page in the browser
+alt + shift and use the cursor to select the same sentence in vs
+alt + z is used to make the sentence short
+alt + l and o is used to go live in vs code
+alt + l and c is used to stop live in vs code
+alt + shift + down arrow to copy and paste the line
+ctrl + enter to go to next line directly
+ctrl + f is to search the current file opened in vs
+ctrl + p is to search all the file in the folder
+alt + shift + down arrow with selection will make the exact copy selected how much we needed
+alt + down or up arrow to adjust where we needed we can move to that place we needed
+ctrl +] is used for indentation
+workbench MySQL user-root, password-S@123
+
+
+                                           GIT
+git-after connection of repo this git code is used to push to the repo on git
+git add.
+git commit -m "message"
+git push -u origin branch name
+To initialize the git from starting
+git init
+git add README.md if needed
+git commit -m "first commit"
+git branch -M main this is used to change the branch
+git remote add origin https://github.com/sree-ram38/sree-portfolio.git
+git push -u origin main
+
+                                          DJANGO
+
+open the terminal inside the folder where you need to create a django project
+1. Type in terminal "python -m venv name of the folder as per your need"
+2. We need to activate the folder that we created "folder name\scripts\activate   -  When activating a message will be shown running script disabled on this system
+3. you need to do some operation in powershell admin terminal win + x for the first time
+4. Install jango "python -m pip install django"
+5. django-admin startproject main folder name.  "." is to create the project inside the folder itself
+6. python manage.py runserver
+7. python manage.py startapp myapp
+
+
+
+
+						DEPLOYING DJANGO PROJECT
+				1.first connect the database in live server use tidb or railway
+				2.then you need to install pip install gunicorn whitenoise
+				3.pip freeze > requirements.txt
+				4.MIDDLEWARE = ['whitenoise.middleware.WhiteNoiseMiddleware',...]STATIC_ROOT = BASE_DIR / "staticfiles"
+				5.DEBUG = False ALLOWED_HOSTS = ['*']  # or your Railway domain later
+				6.Procfile - web: gunicorn visitor_entry.wsgi:application
+
+
+ 
+------------------------------------------------------------------------
+
+1 open the folder separately
+2 go to vs code and open the terminal and then type "python -m venv "foldername"(i given "learning")"
+3 then we need to activate for that " .\learning\scripts\activate "
+4 after activation it will show the folder name first if it shows ther is no problem if it not show then you need to do some extra operation on the terminal
+5 then type " python -m pip install django "
+6 then to upgrade to the latest version" python -m pip install --upgrade "
+7 after start the project using " django-admin startproject "mainfolderName where the venv is available("project"-my folder name) . ""
+  dot at the last is added to create that on the current without any new folder is created
+8 check whether it is running to check type " python manage.py runserver "
+9 ctrl + c  to break the server safely
+           ---------------------------
+to create the app
+10 "python manage.py startapp appname"
+           ---------------------------
+                                  simple
+1. python -m venv myvenv
+2. .\myvenv\scripts\activate
+3. pip install django
+4. django-admin startproject projectname
+5. python manage.py startapp appname
+6. python manage.py runserver
+
+				-------------LINKS------------------
+https://drive.google.com/drive/folders/1DQNce1oTJFDcBV45OdVdA5Jqa83iMWM9?usp=sharing
+https://portfolio-ideas.vercel.app/portfolio.html
+
+		----------------------------MEETING------------------
+02-01-2026 finished on 07-01-2026 and met sir on 08-01-2026
+form in portfolio - javascript need to be included it should alert if wrong input is given
+python entry pass should be stored in the file using file handling
+basics of django need to be learned
+
+08-01-2026 need to meet sir on 13-01-2026 tuesday
+youtube channel
+data science in tamil
+w3schools.com   -html,javascript, css, python
+
+python - data types
+set,tuple,dict,int,char
+string   - methods, if, do
+
+files
+database handling
+How to create Django Project, Apps
+- Menu, entry screen, database store, report , summary
+React Fundamentals
+
+met sir on 13-01-2026 and went to ntk ate briyani with tkadai in red panda
+need to meet shankar sir tomorrow 22-01-2026
+django post task shown to shankar sir and some suggestion told
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------MOTIVATION------------------------------------
+except sreeram
+disturbing me while I'm in peacefully
+chennaiku pohala orandaiyum pohala summa sollitu alaiyaa
+evan theruvaana epdi
+kovalam beach la meen pudikka vitturuvae
+kanyakumari return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2026
+
+JANUARY(kerala bus incident happened, solairani incident)
+jan1 dakshin give idly
+jan3 dakshin bdy
+jan18 sanjana bdy
+jan19 reshmiya bdy
+jan28 lekcall and told punaiya thala keela pudichu thanniku ulla mukkunga
+
+
+feb11 pg bike crossed
+feb12 talkedinmobabtgirish
+feb13 sambalakka shankarbirthdaycelebrated
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@password@recovery
+sreeram2003ic@gmail.com@@
+spotify,insta(sreeram_santhoshsree)
+sree1341vel@gmail.com@@
+ramgithub38@gmail.com@@
+rizzlericker12@gmail.com
+
+  
