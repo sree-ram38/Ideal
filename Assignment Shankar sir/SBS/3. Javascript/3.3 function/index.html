@@ -8,5 +8,191 @@
 <body>
     <h1>FUNCTION</h1>
 </body>
-<script src="function.js"></script>
-</html>
+<script>
+//     function sum(a,b){
+//     return a+b;
+// }
+// console.log(sum(10,10));
+
+
+
+// // checking positive or not
+// function ispositive(num){
+//     return num>0;
+// }
+// console.log(ispositive(4))
+
+
+
+// function hello(){
+//     console.log('HELLO')
+// }
+// hello()
+
+
+
+// console.log(findproduct(4,7)) //hoisting
+// function findproduct(a,b){
+//     return a*b
+// }
+// console.log(findproduct)
+// console.log(typeof findproduct)
+
+
+
+// function greet(name='there'){
+//     console.log('Hi',name)
+// }
+// greet("Sree")
+// greet()
+
+
+
+// // recursive function
+// function fact(num){
+//     if (num==1)
+//         return 1
+//     return num*fact(num-1)
+// }
+// console.log(fact(3));
+// console.log('sree')
+
+
+
+// // even or odd
+// let iseven=function(num){
+//     return num%2==0
+// }
+// console.log(iseven(4))
+// console.log(iseven)
+
+// function sayhello(mes){
+//     console.log(mes)
+// }
+// let result = sayhello('hi sree');
+// console.log('Result:',result)
+
+// function add(a,b){
+//     return a+b
+// }
+// console.log(add(2,2))
+
+// function
+// function add(a,b){
+//     if(a&&b){
+//         return a+b
+//     }
+//     return 0;
+// }r()
+// console.log(add(3,2))
+
+// // closure
+// function outer(){
+//     var b = 10;
+//     function inner(){
+//         var a = 20;
+//         console.log(a+b);
+//     }
+//     return inner;
+// }
+// let some =outer();
+// some()
+
+// // arrowfunction
+// const add = (a,b) => a+b;
+// console.log(add(3,3));
+
+// const user = {
+//     name:'sree',
+//     normalfn:function(){
+//         setTimeout(function(){
+//             console.log('Normal: '+this.name);
+//         },2000);
+//     },
+//     arrowfn: function(){
+//         setTimeout(()=>{
+//             console.log("Arrow: "+this.name);
+//         },2000)
+//     }
+// };
+// user.normalfn()
+// user.arrowfn()
+
+// rest parameters
+// function sum(...numbers){
+//     return numbers.reduce((a,b)=>a+b,0);
+// }
+// console.log(sum(1,2,3,4))
+
+// // callback
+// function getuser(id, callback){
+//     setTimeout(()=>{
+//         console.log("user fetched");
+//         callback({id:id, name:'sree'});
+//     },2000)
+// }
+
+// function getpost(user, callback){
+//     setTimeout(()=>{
+//         console.log("Posts fetched "+user.name );
+//         callback(['post 1', 'post 2']);
+//     },2000)
+// }
+
+// function getcomment(post, callback){
+//     setTimeout(()=>{
+//         console.log("comments fetched "+post );
+//         callback(['comment 1', 'comment 2']);
+//     },2000);
+// }
+
+// getuser(1, function(user){
+//     getpost(user, function (post){
+//         getcomment(post[0],function(comment) {
+//             console.log(comment);
+//         });
+//     });
+// });
+
+
+
+// // promise in callback
+function getuser(id){
+    return new Promise((resolve) => setTimeout(()=>{
+        console.log("user fetched");
+        resolve({id:id, name:'sree'});
+    },2000) );
+}
+
+function getpost(user){
+    return new Promise((resolve) => setTimeout(()=>{
+        console.log("Posts fetched "+user.name );
+        resolve(['post 1', 'post 2']);
+    },2000) );
+}
+
+function getcomment(post){
+    return new Promise((resolve) => setTimeout(()=>{
+        console.log("comments fetched "+post );
+        resolve(['comment 1', 'comment 2']);
+    },2000) );
+}
+
+// getuser(1)
+//     .then((user)=> getpost(user))
+//     .then((post)=>getcomment(post[0]))
+//     .then((comment)=>console.log(comment));
+
+
+// async wait
+async function fetchall(){
+    const user = await getuser();
+    const post = await getpost(user);
+    const comment = await getcomment(post[0]);
+    console.log(comment);
+}
+fetchall()
+
+
+</script>
+</html> 
