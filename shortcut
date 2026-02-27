@@ -69,7 +69,7 @@ open the terminal inside the folder where you need to create a django project
 8 check whether it is running to check type " python manage.py runserver "
 9 ctrl + c  to break the server safely
            ---------------------------
-to create the app
+to create the apps
 10 "python manage.py startapp appname"
            ---------------------------
                                   simple
