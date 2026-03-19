@@ -1,0 +1,2621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Prep — Django · DRF · AJAX</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --bg2: #efede6;
+  --bg3: #e5e1d8;
+  --ink: #1a1814;
+  --ink2: #3d3a34;
+  --muted: #7a7568;
+  --muted2: #a09890;
+  --line: rgba(0,0,0,0.08);
+  --line2: rgba(0,0,0,0.05);
+  --dj-h: #1a5c38;
+  --dj: #2e7d52;
+  --dj-bg: rgba(46,125,82,0.08);
+  --dj-border: rgba(46,125,82,0.25);
+  --drf-h: #1e3a8a;
+  --drf: #2563eb;
+  --drf-bg: rgba(37,99,235,0.07);
+  --drf-border: rgba(37,99,235,0.22);
+  --aj-h: #6b21a8;
+  --aj: #7c3aed;
+  --aj-bg: rgba(124,58,237,0.07);
+  --aj-border: rgba(124,58,237,0.22);
+  --red: #dc2626;
+  --red-bg: rgba(220,38,38,0.07);
+  --green: #15803d;
+  --green-bg: rgba(21,128,61,0.08);
+  --amber: #b45309;
+  --amber-bg: rgba(180,83,9,0.07);
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px;}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--ink);color:#fff;
+  display:flex;flex-direction:column;
+}
+.sb-top{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sb-kicker{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px;}
+.sb-title{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.2;color:#fff;}
+.sb-title em{font-style:italic;color:rgba(255,255,255,0.45);}
+
+.sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);}
+.sb-stat{padding:12px 18px;background:var(--ink);}
+.ss-val{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1;}
+.ss-label{font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;}
+.ss-val.green{color:#4ade80;}
+.ss-val.blue{color:#60a5fa;}
+.ss-val.purple{color:#c084fc;}
+
+.sb-progress{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sp-label{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);font-family:var(--mono);margin-bottom:8px;}
+.sp-track{height:2px;background:rgba(255,255,255,0.1);border-radius:1px;overflow:hidden;}
+.sp-fill{height:100%;width:0%;background:linear-gradient(90deg,#4ade80,#60a5fa);transition:width .4s ease;border-radius:1px;}
+
+.sb-nav{padding:10px 0;flex:1;overflow-y:auto;}
+.sn-section{padding:12px 24px 4px;font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.2);}
+.sn-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 24px;cursor:pointer;
+  font-size:12px;color:rgba(255,255,255,0.4);
+  border-left:2px solid transparent;
+  transition:all .15s;
+}
+.sn-item:hover{color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.03);}
+.sn-item.active{color:#fff;border-left-color:#fff;background:rgba(255,255,255,0.05);}
+.sn-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.15);min-width:5px;}
+.sn-item.active .sn-dot{background:#fff;}
+.sn-count{margin-left:auto;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.2);}
+.sn-item.active .sn-count{color:rgba(255,255,255,0.5);}
+
+/* ── MAIN ── */
+.main{overflow-y:auto;height:100vh;}
+
+/* ── HERO ── */
+.hero{
+  padding:56px 64px 48px;
+  border-bottom:1px solid var(--line);
+  background:var(--bg);
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;right:-80px;top:-80px;
+  width:360px;height:360px;
+  background:radial-gradient(circle,rgba(46,125,82,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.hero-kicker::before{content:'';width:28px;height:1px;background:var(--muted2);}
+.hero-title{font-family:var(--serif);font-size:clamp(32px,4vw,50px);font-weight:600;line-height:1.05;margin-bottom:14px;}
+.hero-title em{font-style:italic;color:var(--muted);}
+.hero-desc{font-size:14px;color:var(--muted);max-width:540px;line-height:1.8;margin-bottom:28px;}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.htag{padding:5px 14px;border-radius:2px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;border:1px solid;}
+.htag-dj{background:var(--dj-bg);border-color:var(--dj-border);color:var(--dj);}
+.htag-drf{background:var(--drf-bg);border-color:var(--drf-border);color:var(--drf);}
+.htag-aj{background:var(--aj-bg);border-color:var(--aj-border);color:var(--aj);}
+.htag-tip{background:rgba(180,83,9,0.07);border-color:rgba(180,83,9,0.25);color:var(--amber);}
+
+/* ── TAB BAR ── */
+.tab-bar{
+  display:flex;align-items:center;gap:0;
+  border-bottom:1px solid var(--line);
+  background:var(--bg);
+  position:sticky;top:0;z-index:10;
+  overflow-x:auto;
+}
+.tab-btn{
+  padding:14px 22px;font-size:12px;font-family:var(--mono);
+  border:none;background:transparent;cursor:pointer;
+  color:var(--muted);border-bottom:2px solid transparent;
+  transition:all .15s;white-space:nowrap;letter-spacing:.03em;
+}
+.tab-btn:hover{color:var(--ink2);}
+.tab-btn.active-tab{color:var(--ink);border-bottom-color:var(--ink);}
+.tab-btn.dj-tab.active-tab{color:var(--dj);border-bottom-color:var(--dj);}
+.tab-btn.drf-tab.active-tab{color:var(--drf);border-bottom-color:var(--drf);}
+.tab-btn.aj-tab.active-tab{color:var(--aj);border-bottom-color:var(--aj);}
+.tab-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;font-size:9px;
+  margin-left:6px;background:var(--bg3);color:var(--muted);
+}
+
+/* ── SECTION ── */
+.section{display:none;padding:0 64px 80px;}
+.section.active{display:block;}
+
+.sec-header{padding:40px 0 28px;}
+.sec-badge{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:4px 12px;border-radius:2px;border:1px solid;margin-bottom:14px;display:inline-block;}
+.sec-title{font-family:var(--serif);font-size:32px;font-weight:600;line-height:1.1;margin-bottom:8px;}
+.sec-desc{font-size:13px;color:var(--muted);max-width:600px;line-height:1.8;}
+
+/* ── LEVEL BADGE ── */
+.level-row{display:flex;align-items:center;gap:8px;margin:32px 0 16px;}
+.level-badge{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:2px;border:1px solid;}
+.lb-basic{background:var(--green-bg);border-color:rgba(21,128,61,.3);color:var(--green);}
+.lb-mid{background:var(--amber-bg);border-color:rgba(180,83,9,.3);color:var(--amber);}
+.lb-adv{background:var(--red-bg);border-color:rgba(220,38,38,.3);color:var(--red);}
+.level-line{flex:1;height:1px;background:var(--line);}
+
+/* ── Q&A CARD ── */
+.qa-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:6px;margin-bottom:12px;
+  overflow:hidden;transition:border-color .2s, box-shadow .2s;
+}
+.qa-card:hover{border-color:rgba(0,0,0,0.15);box-shadow:0 2px 12px rgba(0,0,0,0.04);}
+
+.qa-header{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:18px 22px;cursor:pointer;
+  user-select:none;
+}
+.qa-num{
+  font-family:var(--mono);font-size:10px;color:var(--muted2);
+  min-width:28px;padding-top:2px;
+}
+.qa-q{font-size:14px;font-weight:500;color:var(--ink);line-height:1.5;flex:1;}
+.qa-tag{
+  font-family:var(--mono);font-size:9px;padding:3px 9px;
+  border-radius:2px;border:1px solid;white-space:nowrap;
+  margin-top:2px;letter-spacing:.05em;
+}
+.tag-dj{background:var(--dj-bg);border-color:var(--dj-border);color:var(--dj);}
+.tag-drf{background:var(--drf-bg);border-color:var(--drf-border);color:var(--drf);}
+.tag-aj{background:var(--aj-bg);border-color:var(--aj-border);color:var(--aj);}
+.qa-arrow{color:var(--muted2);font-size:12px;transition:transform .2s;margin-top:3px;}
+.qa-card.open .qa-arrow{transform:rotate(180deg);}
+
+.qa-body{
+  display:none;padding:0 22px 20px 64px;
+  border-top:1px solid var(--line2);
+}
+.qa-card.open .qa-body{display:block;}
+
+.ans-text{font-size:13px;color:var(--ink2);line-height:1.85;margin-bottom:12px;}
+.ans-text strong{font-weight:500;color:var(--ink);}
+.ans-text em{font-style:italic;}
+
+/* Code block inside answer */
+.code-snip{
+  background:var(--ink);border-radius:4px;
+  overflow:hidden;margin:10px 0;
+}
+.cs-bar{
+  padding:7px 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.cs-fname{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.3);}
+.cs-copy{
+  font-family:var(--mono);font-size:9px;padding:2px 8px;
+  border:1px solid rgba(255,255,255,0.12);background:transparent;
+  color:rgba(255,255,255,0.35);border-radius:2px;cursor:pointer;
+  transition:all .15s;
+}
+.cs-copy:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);}
+pre{
+  padding:14px;font-family:var(--mono);font-size:12px;
+  line-height:1.75;color:rgba(255,255,255,0.82);overflow-x:auto;tab-size:4;
+}
+pre .kw{color:#c792ea;}
+pre .fn{color:#82aaff;}
+pre .str{color:#c3e88d;}
+pre .cm{color:#546e7a;font-style:italic;}
+pre .num{color:#f78c6c;}
+pre .cls{color:#ffcb6b;}
+pre .dec{color:#89ddff;}
+pre .prop{color:#f07178;}
+
+/* Tip/note boxes inside answers */
+.ans-tip{
+  padding:10px 14px;border-radius:3px;margin:10px 0;
+  font-size:12px;line-height:1.7;
+}
+.tip-green{background:var(--green-bg);border-left:3px solid var(--green);color:#14532d;}
+.tip-blue{background:var(--drf-bg);border-left:3px solid var(--drf);color:#1e3a8a;}
+.tip-amber{background:var(--amber-bg);border-left:3px solid var(--amber);color:#78350f;}
+.tip-red{background:var(--red-bg);border-left:3px solid var(--red);color:#7f1d1d;}
+
+/* List inside answers */
+.ans-list{margin:8px 0 10px 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:5px;}
+.ans-list li{font-size:13px;color:var(--ink2);padding-left:16px;position:relative;line-height:1.65;}
+.ans-list li::before{content:'—';position:absolute;left:0;color:var(--muted2);}
+
+/* Inline code */
+code{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:3px;color:var(--ink2);}
+
+/* Compare table */
+.ctbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}
+.ctbl th{text-align:left;padding:8px 12px;background:var(--bg2);font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);}
+.ctbl td{padding:8px 12px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:top;}
+.ctbl tr:last-child td{border-bottom:none;}
+.ctbl td:first-child{color:var(--ink);font-weight:500;}
+
+/* Bookmark button */
+.qa-bm{
+  background:none;border:none;cursor:pointer;
+  font-size:14px;color:var(--muted2);padding-top:2px;
+  transition:color .15s;
+}
+.qa-bm.bookmarked{color:#f59e0b;}
+
+/* Search bar */
+.search-wrap{
+  padding:20px 64px 0;
+}
+.search-box{
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border:1px solid var(--line);
+  border-radius:6px;padding:10px 16px;
+  max-width:480px;
+}
+.search-box input{
+  border:none;outline:none;font-family:var(--sans);
+  font-size:13px;color:var(--ink);background:transparent;flex:1;
+}
+.search-box input::placeholder{color:var(--muted2);}
+.search-icon{color:var(--muted2);font-size:14px;}
+.result-count{font-family:var(--mono);font-size:10px;color:var(--muted2);white-space:nowrap;}
+
+/* Quick tips bar */
+.tips-bar{
+  background:var(--ink);color:#fff;
+  padding:12px 64px;
+  display:flex;align-items:center;gap:16px;
+  font-size:12px;color:rgba(255,255,255,0.6);
+  border-bottom:1px solid var(--line);
+}
+.tips-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);white-space:nowrap;}
+.tips-item{padding:4px 12px;background:rgba(255,255,255,0.06);border-radius:2px;font-size:11px;white-space:nowrap;cursor:pointer;transition:background .15s;}
+.tips-item:hover{background:rgba(255,255,255,0.1);}
+
+/* Filter pills */
+.filter-row{display:flex;gap:6px;padding:16px 64px 0;flex-wrap:wrap;}
+.filt{
+  padding:5px 14px;border-radius:2px;font-family:var(--mono);font-size:10px;
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  cursor:pointer;transition:all .15s;
+}
+.filt:hover{border-color:rgba(0,0,0,0.2);color:var(--ink2);}
+.filt.filt-active{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+/* Interview mode */
+.im-banner{
+  background:linear-gradient(135deg,#1a5c38,#1e3a8a);
+  color:#fff;padding:14px 64px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+}
+.im-text{font-size:13px;line-height:1.5;}
+.im-text strong{font-weight:500;}
+.im-btn{
+  padding:8px 18px;background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:3px;font-family:var(--mono);font-size:10px;
+  color:#fff;cursor:pointer;transition:background .15s;white-space:nowrap;
+}
+.im-btn:hover{background:rgba(255,255,255,0.2);}
+
+/* Answer hidden in practice mode */
+.qa-body.practice-hidden{display:none!important;}
+.show-ans-btn{
+  margin-top:8px;padding:7px 16px;
+  background:var(--bg2);border:1px solid var(--line);
+  border-radius:3px;font-family:var(--mono);font-size:10px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+  display:none;
+}
+.practice-mode .show-ans-btn{display:inline-block;}
+.show-ans-btn:hover{background:var(--bg3);color:var(--ink);}
+
+/* Confidence rating */
+.conf-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line2);}
+.conf-label{font-family:var(--mono);font-size:10px;color:var(--muted2);}
+.conf-btn{
+  padding:4px 10px;border-radius:2px;font-family:var(--mono);font-size:10px;
+  border:1px solid var(--line);background:transparent;cursor:pointer;
+  color:var(--muted);transition:all .15s;
+}
+.conf-btn:hover{border-color:rgba(0,0,0,0.2);}
+.conf-btn.conf-know{background:var(--green-bg);border-color:rgba(21,128,61,.3);color:var(--green);}
+.conf-btn.conf-review{background:var(--amber-bg);border-color:rgba(180,83,9,.3);color:var(--amber);}
+.conf-btn.conf-skip{background:var(--red-bg);border-color:rgba(220,38,38,.3);color:var(--red);}
+
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{position:relative;height:auto;}
+  .hero,.section,.search-wrap,.filter-row,.im-banner,.tips-bar{padding-left:20px;padding-right:20px;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-top">
+    <div class="sb-kicker">Interview Prep · Today</div>
+    <div class="sb-title">Django · DRF<br><em>AJAX</em> · Q&A</div>
+  </div>
+  <div class="sb-stats">
+    <div class="sb-stat"><div class="ss-val green" id="total-q">120+</div><div class="ss-label">Questions</div></div>
+    <div class="sb-stat"><div class="ss-val blue" id="answered-count">0</div><div class="ss-label">Reviewed</div></div>
+    <div class="sb-stat"><div class="ss-val green" id="know-count">0</div><div class="ss-label">I know this</div></div>
+    <div class="sb-stat"><div class="ss-val purple" id="review-count">0</div><div class="ss-label">Need review</div></div>
+  </div>
+  <div class="sb-progress">
+    <div class="sp-label"><span>Progress</span><span id="prog-pct">0%</span></div>
+    <div class="sp-track"><div class="sp-fill" id="prog-fill"></div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sn-section">Topics</div>
+    <div class="sn-item active" onclick="switchTab('all')"><div class="sn-dot"></div>All Questions<span class="sn-count" id="cnt-all">120+</span></div>
+    <div class="sn-section">Django</div>
+    <div class="sn-item" onclick="switchTab('dj')"><div class="sn-dot"></div>Basics<span class="sn-count">15</span></div>
+    <div class="sn-item" onclick="switchTab('dj-mid')"><div class="sn-dot"></div>Intermediate<span class="sn-count">15</span></div>
+    <div class="sn-item" onclick="switchTab('dj-adv')"><div class="sn-dot"></div>Advanced<span class="sn-count">12</span></div>
+    <div class="sn-section">Django REST</div>
+    <div class="sn-item" onclick="switchTab('drf')"><div class="sn-dot"></div>Basics<span class="sn-count">15</span></div>
+    <div class="sn-item" onclick="switchTab('drf-mid')"><div class="sn-dot"></div>Intermediate<span class="sn-count">13</span></div>
+    <div class="sn-item" onclick="switchTab('drf-adv')"><div class="sn-dot"></div>Advanced<span class="sn-count">12</span></div>
+    <div class="sn-section">AJAX</div>
+    <div class="sn-item" onclick="switchTab('aj')"><div class="sn-dot"></div>Basics<span class="sn-count">13</span></div>
+    <div class="sn-item" onclick="switchTab('aj-mid')"><div class="sn-dot"></div>Intermediate<span class="sn-count">12</span></div>
+    <div class="sn-item" onclick="switchTab('aj-adv')"><div class="sn-dot"></div>Advanced<span class="sn-count">10</span></div>
+    <div class="sn-section">Practice</div>
+    <div class="sn-item" onclick="switchTab('bookmarks')"><div class="sn-dot"></div>Bookmarked<span class="sn-count" id="cnt-bm">0</span></div>
+    <div class="sn-item" onclick="switchTab('needs-review')"><div class="sn-dot"></div>Needs Review<span class="sn-count" id="cnt-rev">0</span></div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="mainEl">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-kicker">Interview Prep Session</div>
+  <h1 class="hero-title">Ready to <em>crack</em><br>your interview</h1>
+  <p class="hero-desc">120+ questions with detailed answers across Django, Django REST Framework, and AJAX — from beginner to advanced. Mark each question with your confidence level to track weak spots.</p>
+  <div class="hero-tags">
+    <span class="htag htag-dj">Django — 42 Qs</span>
+    <span class="htag htag-drf">DRF — 40 Qs</span>
+    <span class="htag htag-aj">AJAX — 35 Qs</span>
+    <span class="htag htag-tip">Code examples included</span>
+  </div>
+</div>
+
+<!-- TIPS BAR -->
+<div class="tips-bar">
+  <span class="tips-label">Quick tips</span>
+  <span class="tips-item" onclick="togglePractice()">🎯 Practice Mode (hide answers)</span>
+  <span class="tips-item" onclick="expandAll()">📖 Expand all</span>
+  <span class="tips-item" onclick="collapseAll()">📕 Collapse all</span>
+  <span class="tips-item" onclick="switchTab('needs-review')">⚠️ Review weak spots</span>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap" style="padding-top:20px;">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search questions... e.g. 'serializer', 'JWT', 'CORS'" oninput="searchQs(this.value)">
+    <span class="result-count" id="resultCount"></span>
+  </div>
+</div>
+
+<!-- FILTER ROW -->
+<div class="filter-row">
+  <button class="filt filt-active" onclick="filterLevel('all',this)">All Levels</button>
+  <button class="filt" onclick="filterLevel('basic',this)">Beginner</button>
+  <button class="filt" onclick="filterLevel('mid',this)">Intermediate</button>
+  <button class="filt" onclick="filterLevel('adv',this)">Advanced</button>
+</div>
+
+<!-- ======= ALL SECTION ======= -->
+<div class="section active" id="sec-all">
+
+<!-- ===== DJANGO BASICS ===== -->
+<div class="sec-header"><span class="sec-badge htag-dj">Django — Basics</span><h2 class="sec-title">Django Fundamentals</h2></div>
+
+<div class="level-row"><span class="level-badge lb-basic">Beginner</span><div class="level-line"></div></div>
+
+<!-- Q1 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="1">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q1</span>
+    <span class="qa-q">What is Django and why is it used?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Django is a high-level Python web framework that follows the <strong>MTV (Model-Template-View)</strong> architectural pattern. It is used because it comes "batteries included" — meaning it provides built-in solutions for authentication, ORM, admin panel, form handling, security, and URL routing without needing third-party libraries.</p>
+    <ul class="ans-list">
+      <li><strong>Rapid development</strong> — built-in admin, auth, ORM saves weeks of work</li>
+      <li><strong>Security</strong> — CSRF protection, SQL injection prevention, XSS protection built-in</li>
+      <li><strong>Scalable</strong> — used by Instagram, Pinterest, Disqus at massive scale</li>
+      <li><strong>DRY principle</strong> — Don't Repeat Yourself; encourages reusable components</li>
+    </ul>
+    <div class="ans-tip tip-green"><strong>Interview tip:</strong> Mention "batteries included" and name 3 built-in features (ORM, admin, auth). Interviewers love this phrase.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="2">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q2</span>
+    <span class="qa-q">What is the difference between Django's MTV and MVC pattern?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Django uses <strong>MTV (Model-Template-View)</strong> which is essentially MVC with different naming:</p>
+    <table class="ctbl"><tr><th>MVC</th><th>Django MTV</th><th>Role</th></tr><tr><td>Model</td><td>Model</td><td>Database structure + business logic</td></tr><tr><td>View</td><td>Template</td><td>What the user sees (HTML)</td></tr><tr><td>Controller</td><td>View</td><td>Handles requests and returns responses</td></tr></table>
+    <p class="ans-text">In Django, the <strong>URL dispatcher</strong> acts as the controller that routes requests to the appropriate View, which fetches data from the Model and passes it to the Template.</p>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="3">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q3</span>
+    <span class="qa-q">What is Django's ORM? How does it work?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">ORM stands for <strong>Object-Relational Mapper</strong>. It lets you interact with your database using Python objects instead of writing raw SQL. Each model class maps to a database table; each instance maps to a row.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">orm_example.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># Instead of: SELECT * FROM posts WHERE status='published' ORDER BY -created</span>
+posts = Post.objects.<span class="fn">filter</span>(status=<span class="str">'published'</span>).<span class="fn">order_by</span>(<span class="str">'-created'</span>)
+
+<span class="cm"># Create a record</span>
+post = Post.objects.<span class="fn">create</span>(title=<span class="str">'Hello'</span>, author=user)
+
+<span class="cm"># Update</span>
+Post.objects.<span class="fn">filter</span>(id=<span class="num">1</span>).<span class="fn">update</span>(status=<span class="str">'published'</span>)
+
+<span class="cm"># Delete</span>
+Post.objects.<span class="fn">filter</span>(status=<span class="str">'draft'</span>).<span class="fn">delete</span>()</pre></div>
+    <div class="ans-tip tip-blue"><strong>Key point:</strong> QuerySets are <em>lazy</em> — the database is not queried until you actually iterate the results or call list(), len(), or similar.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q4 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="4">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q4</span>
+    <span class="qa-q">What are Django migrations? Why are they important?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Migrations are Django's way of <strong>propagating model changes to the database schema</strong>. They are Python files that contain instructions to create, alter, or delete database tables and columns.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">terminal</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># Step 1: Detect model changes, create migration file</span>
+python manage.py makemigrations
+
+<span class="cm"># Step 2: Apply migrations to the database</span>
+python manage.py migrate
+
+<span class="cm"># Show migration status</span>
+python manage.py showmigrations
+
+<span class="cm"># Rollback to a specific migration</span>
+python manage.py migrate app_name 0002</pre></div>
+    <div class="ans-tip tip-amber"><strong>Important:</strong> Always commit migration files to version control. Never delete migration files from a deployed app — it breaks the migration history.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q5 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="5">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q5</span>
+    <span class="qa-q">What is the difference between <code>null=True</code> and <code>blank=True</code> in Django models?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Option</th><th>What it controls</th><th>When to use</th></tr><tr><td>null=True</td><td>Database level — column can store NULL</td><td>For non-string fields (IntegerField, DateField, ForeignKey)</td></tr><tr><td>blank=True</td><td>Validation level — field can be empty in forms/serializers</td><td>When the field is optional in user input</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">models.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre>bio = models.<span class="cls">TextField</span>(blank=<span class="kw">True</span>)          <span class="cm"># Optional text, no NULL in DB</span>
+dob = models.<span class="cls">DateField</span>(null=<span class="kw">True</span>, blank=<span class="kw">True</span>)  <span class="cm"># Optional date, NULL in DB</span>
+manager = models.<span class="cls">ForeignKey</span>(User, null=<span class="kw">True</span>, blank=<span class="kw">True</span>, on_delete=models.SET_NULL)</pre></div>
+    <div class="ans-tip tip-green"><strong>Rule:</strong> For string-based fields (CharField, TextField), only use <code>blank=True</code>. Django stores empty strings, not NULL. For non-string fields, use both <code>null=True, blank=True</code>.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q6 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="6">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q6</span>
+    <span class="qa-q">What is Django's <code>settings.py</code> and what are the most important settings?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>settings.py</code> is the central configuration file for a Django project. Key settings include:</p>
+    <ul class="ans-list">
+      <li><strong>SECRET_KEY</strong> — cryptographic key; must be secret in production (use env vars)</li>
+      <li><strong>DEBUG</strong> — True in dev, False in production (never True in production!)</li>
+      <li><strong>ALLOWED_HOSTS</strong> — list of domain names that can serve this app</li>
+      <li><strong>INSTALLED_APPS</strong> — list of all active apps including third-party</li>
+      <li><strong>DATABASES</strong> — database connection config</li>
+      <li><strong>MIDDLEWARE</strong> — list of middleware classes (order matters!)</li>
+      <li><strong>STATIC_URL / MEDIA_URL</strong> — for serving static files and user uploads</li>
+    </ul>
+    <div class="ans-tip tip-red"><strong>Security:</strong> Never hardcode SECRET_KEY or DB passwords. Use environment variables with python-dotenv or os.environ.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q7 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="7">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q7</span>
+    <span class="qa-q">Explain Django's URL dispatcher and <code>urls.py</code>.</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">The URL dispatcher maps URL patterns to view functions. Django checks each pattern in order and calls the first matching view.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">urls.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.urls <span class="kw">import</span> path, include
+<span class="kw">from</span> . <span class="kw">import</span> views
+
+urlpatterns = [
+    path(<span class="str">''</span>, views.home, name=<span class="str">'home'</span>),
+    path(<span class="str">'posts/'</span>, views.PostListView.as_view(), name=<span class="str">'post-list'</span>),
+    path(<span class="str">'posts/&lt;int:pk&gt;/'</span>, views.PostDetailView.as_view(), name=<span class="str">'post-detail'</span>),
+    path(<span class="str">'api/'</span>, include(<span class="str">'api.urls'</span>)),  <span class="cm"># include another urls.py</span>
+]</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q8 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="8">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q8</span>
+    <span class="qa-q">What is Django middleware? Give examples.</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Middleware is a framework of hooks into Django's request/response processing. It's a layer that processes requests <strong>before they reach the view</strong> and responses <strong>before they reach the client</strong>.</p>
+    <ul class="ans-list">
+      <li><strong>SecurityMiddleware</strong> — adds security headers, redirects HTTP to HTTPS</li>
+      <li><strong>SessionMiddleware</strong> — manages user sessions across requests</li>
+      <li><strong>AuthenticationMiddleware</strong> — attaches <code>request.user</code> to every request</li>
+      <li><strong>CsrfViewMiddleware</strong> — verifies CSRF token on POST requests</li>
+      <li><strong>CorsMiddleware</strong> — handles CORS headers (from django-cors-headers)</li>
+    </ul>
+    <div class="ans-tip tip-amber"><strong>Order matters:</strong> Middleware is processed top-to-bottom for requests and bottom-to-top for responses. CorsMiddleware must be first in the list.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q9 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="9">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q9</span>
+    <span class="qa-q">What are Django signals? When would you use them?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Signals allow decoupled applications to get notified when certain actions occur. They implement the <strong>Observer pattern</strong> — senders broadcast signals, receivers listen and react.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">signals.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.db.models.signals <span class="kw">import</span> post_save
+<span class="kw">from</span> django.dispatch <span class="kw">import</span> receiver
+<span class="kw">from</span> .models <span class="kw">import</span> User, Profile
+
+<span class="dec">@receiver</span>(post_save, sender=User)
+<span class="kw">def</span> <span class="fn">create_user_profile</span>(sender, instance, created, **kwargs):
+    <span class="kw">if</span> created:
+        Profile.objects.<span class="fn">create</span>(user=instance)
+        <span class="cm"># Send welcome email, etc.</span></pre></div>
+    <p class="ans-text">Common signals: <code>pre_save</code>, <code>post_save</code>, <code>pre_delete</code>, <code>post_delete</code>, <code>m2m_changed</code>.</p>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q10 -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="10">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q10</span>
+    <span class="qa-q">What is the difference between <code>ForeignKey</code>, <code>OneToOneField</code>, and <code>ManyToManyField</code>?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Field</th><th>Relationship</th><th>Example</th></tr><tr><td>ForeignKey</td><td>Many-to-One — many posts, one author</td><td>Post → User (many posts per user)</td></tr><tr><td>OneToOneField</td><td>One-to-One — one profile per user</td><td>Profile → User (extends User model)</td></tr><tr><td>ManyToManyField</td><td>Many-to-Many — posts can have many tags; tags can have many posts</td><td>Post ↔ Tag</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">models.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre>author   = models.<span class="cls">ForeignKey</span>(User, on_delete=models.<span class="cls">CASCADE</span>, related_name=<span class="str">'posts'</span>)
+profile  = models.<span class="cls">OneToOneField</span>(User, on_delete=models.<span class="cls">CASCADE</span>)
+tags     = models.<span class="cls">ManyToManyField</span>(<span class="str">'Tag'</span>, blank=<span class="kw">True</span>)
+
+<span class="cm"># Access reverse relations</span>
+user.posts.<span class="fn">all</span>()       <span class="cm"># all posts by this user (ForeignKey)</span>
+user.profile            <span class="cm"># the user's profile (OneToOne)</span>
+post.tags.<span class="fn">all</span>()        <span class="cm"># all tags on this post (M2M)</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- Q11-15 basic -->
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="11">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q11</span>
+    <span class="qa-q">What is <code>on_delete</code> in ForeignKey and what are the options?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>on_delete</code> defines what happens to the referencing object when the referenced object is deleted.</p>
+    <table class="ctbl"><tr><th>Option</th><th>Behavior</th></tr><tr><td>CASCADE</td><td>Delete child rows too (posts deleted when user deleted)</td></tr><tr><td>SET_NULL</td><td>Set FK to NULL (requires null=True)</td></tr><tr><td>SET_DEFAULT</td><td>Set FK to default value</td></tr><tr><td>PROTECT</td><td>Raise ProtectedError, prevent deletion</td></tr><tr><td>DO_NOTHING</td><td>Do nothing (may cause DB integrity errors)</td></tr><tr><td>RESTRICT</td><td>Like PROTECT but more nuanced (Django 3.1+)</td></tr></table>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="12">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q12</span>
+    <span class="qa-q">How does Django's built-in authentication system work?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Django provides a complete authentication system out of the box including User model, password hashing (PBKDF2 by default), sessions, login/logout views, and permission system.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">auth_usage.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.contrib.auth <span class="kw">import</span> authenticate, login, logout
+<span class="kw">from</span> django.contrib.auth.decorators <span class="kw">import</span> login_required
+
+<span class="kw">def</span> <span class="fn">login_view</span>(request):
+    user = <span class="fn">authenticate</span>(username=<span class="str">'ali'</span>, password=<span class="str">'pass'</span>)
+    <span class="kw">if</span> user: <span class="fn">login</span>(request, user)
+
+<span class="dec">@login_required</span>
+<span class="kw">def</span> <span class="fn">dashboard</span>(request):
+    <span class="kw">return</span> HttpResponse(<span class="str">f"Hello {request.user.username}"</span>)</pre></div>
+    <div class="ans-tip tip-green"><strong>Best practice:</strong> Create a custom user model (<code>class User(AbstractUser)</code>) from the very start of the project. Changing it later is extremely painful.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="13">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q13</span>
+    <span class="qa-q">What is Django admin and how do you customize it?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Django admin is an auto-generated web interface for managing database records. You register models with it and immediately get a fully functional CRUD interface.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">admin.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.contrib <span class="kw">import</span> admin
+<span class="kw">from</span> .models <span class="kw">import</span> Post
+
+<span class="dec">@admin.register</span>(Post)
+<span class="kw">class</span> <span class="cls">PostAdmin</span>(admin.<span class="cls">ModelAdmin</span>):
+    list_display  = [<span class="str">'title'</span>, <span class="str">'author'</span>, <span class="str">'status'</span>, <span class="str">'created'</span>]
+    list_filter   = [<span class="str">'status'</span>, <span class="str">'category'</span>]
+    search_fields = [<span class="str">'title'</span>, <span class="str">'body'</span>]
+    prepopulated_fields = {<span class="str">'slug'</span>: (<span class="str">'title'</span>,)}
+    ordering      = [<span class="str">'-created'</span>]</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="14">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q14</span>
+    <span class="qa-q">What is <code>request.GET</code> vs <code>request.POST</code> vs <code>request.data</code>?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Attribute</th><th>Contains</th><th>Used in</th></tr><tr><td>request.GET</td><td>URL query parameters (?page=2&status=active)</td><td>Standard Django views</td></tr><tr><td>request.POST</td><td>HTML form data (application/x-www-form-urlencoded)</td><td>Standard Django forms</td></tr><tr><td>request.data</td><td>Parsed request body (JSON, form data, multipart)</td><td>DRF API views only</td></tr><tr><td>request.FILES</td><td>Uploaded files</td><td>Both Django and DRF</td></tr></table>
+    <div class="ans-tip tip-blue"><strong>DRF note:</strong> In DRF, always use <code>request.data</code> instead of <code>request.POST</code>. It handles JSON bodies automatically.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj" data-level="basic" data-id="15">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q15</span>
+    <span class="qa-q">What is CSRF and how does Django handle it?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><strong>CSRF (Cross-Site Request Forgery)</strong> is an attack where a malicious website tricks a user's browser into making unauthorized requests to your app. Django prevents it by generating a unique CSRF token per session and requiring it on every non-GET request.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">template.html + ajax</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm">&lt;!-- In templates --&gt;</span>
+{% csrf_token %}
+
+<span class="cm">// In AJAX requests</span>
+<span class="kw">function</span> <span class="fn">getCsrf</span>() {
+  <span class="kw">return</span> document.cookie.<span class="fn">split</span>(<span class="str">';'</span>)
+    .<span class="fn">find</span>(c => c.trim().<span class="fn">startsWith</span>(<span class="str">'csrftoken='</span>))
+    ?.<span class="fn">split</span>(<span class="str">'='</span>)[<span class="num">1</span>];
+}
+headers: { <span class="str">'X-CSRFToken'</span>: <span class="fn">getCsrf</span>() }</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- ===== DJANGO INTERMEDIATE ===== -->
+<div class="level-row" style="margin-top:40px"><span class="level-badge lb-mid">Intermediate</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="16">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q16</span>
+    <span class="qa-q">What is the N+1 query problem and how do you solve it in Django?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">The N+1 problem occurs when you execute 1 query to get N objects, then execute N additional queries to get related data for each object. For example: fetching 20 posts and then accessing <code>post.author</code> in a loop — that's 21 queries instead of 1.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">n_plus_one_fix.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># BAD — N+1 problem: 1 + 20 queries</span>
+posts = Post.objects.<span class="fn">all</span>()
+<span class="kw">for</span> post <span class="kw">in</span> posts:
+    print(post.author.name)  <span class="cm"># separate DB hit each time!</span>
+
+<span class="cm"># GOOD — select_related: single JOIN query (for ForeignKey)</span>
+posts = Post.objects.<span class="fn">select_related</span>(<span class="str">'author'</span>, <span class="str">'category'</span>).<span class="fn">all</span>()
+
+<span class="cm"># GOOD — prefetch_related: 2 queries total (for ManyToMany/reverse FK)</span>
+posts = Post.objects.<span class="fn">prefetch_related</span>(<span class="str">'tags'</span>, <span class="str">'comments'</span>).<span class="fn">all</span>()</pre></div>
+    <div class="ans-tip tip-red"><strong>Critical:</strong> Install Django Debug Toolbar in development. It shows you every SQL query. N+1 is the #1 performance killer in Django apps.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="17">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q17</span>
+    <span class="qa-q">What is the difference between <code>get()</code>, <code>filter()</code>, and <code>get_or_create()</code>?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Method</th><th>Returns</th><th>Raises if</th></tr><tr><td>get()</td><td>Single object</td><td>DoesNotExist or MultipleObjectsReturned</td></tr><tr><td>filter()</td><td>QuerySet (can be empty)</td><td>Never raises</td></tr><tr><td>get_or_create()</td><td>(object, created) tuple</td><td>MultipleObjectsReturned</td></tr><tr><td>first() / last()</td><td>Object or None</td><td>Never raises</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">queryset_methods.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># get() — use when you KNOW exactly one result</span>
+user = User.objects.<span class="fn">get</span>(email=<span class="str">'ali@example.com'</span>)
+
+<span class="cm"># filter() — use for lists or when 0 results is valid</span>
+posts = Post.objects.<span class="fn">filter</span>(status=<span class="str">'published'</span>)
+
+<span class="cm"># get_or_create() — creates if doesn't exist</span>
+profile, created = Profile.objects.<span class="fn">get_or_create</span>(
+    user=request.user,
+    defaults={<span class="str">'bio'</span>: <span class="str">''</span>}
+)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="18">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q18</span>
+    <span class="qa-q">What are Class-Based Views (CBVs) vs Function-Based Views (FBVs)?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th></th><th>FBV</th><th>CBV</th></tr><tr><td>Syntax</td><td>Simple Python functions</td><td>Classes inheriting from View</td></tr><tr><td>Reusability</td><td>Lower — repeat code</td><td>Higher — inheritance + mixins</td></tr><tr><td>Readability</td><td>More explicit/clear</td><td>Less boilerplate once learned</td></tr><tr><td>Best for</td><td>Simple one-off views</td><td>CRUD views, reusable patterns</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">views_comparison.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># FBV</span>
+<span class="kw">def</span> <span class="fn">post_list</span>(request):
+    posts = Post.objects.<span class="fn">all</span>()
+    <span class="kw">return</span> <span class="fn">render</span>(request, <span class="str">'posts.html'</span>, {<span class="str">'posts'</span>: posts})
+
+<span class="cm"># CBV equivalent</span>
+<span class="kw">class</span> <span class="cls">PostListView</span>(ListView):
+    model = Post
+    template_name = <span class="str">'posts.html'</span>
+    context_object_name = <span class="str">'posts'</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="19">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q19</span>
+    <span class="qa-q">How does Django caching work? What are the cache backends?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Django supports multiple cache backends. Caching avoids repeated expensive DB queries or computation.</p>
+    <ul class="ans-list">
+      <li><strong>LocMemCache</strong> — in-process memory (default, not shared across processes)</li>
+      <li><strong>RedisCache</strong> — Redis server (best for production, shared across workers)</li>
+      <li><strong>MemcachedCache</strong> — Memcached (older alternative to Redis)</li>
+      <li><strong>DatabaseCache</strong> — stores cache in DB table (easy setup, slower)</li>
+    </ul>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">caching.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.core.cache <span class="kw">import</span> cache
+<span class="kw">from</span> django.views.decorators.cache <span class="kw">import</span> cache_page
+
+<span class="cm"># Low-level cache API</span>
+cache.<span class="fn">set</span>(<span class="str">'my_key'</span>, data, timeout=<span class="num">300</span>)  <span class="cm"># 5 minutes</span>
+data = cache.<span class="fn">get</span>(<span class="str">'my_key'</span>)
+
+<span class="cm"># Cache entire view for 15 minutes</span>
+<span class="dec">@cache_page</span>(<span class="num">60</span> * <span class="num">15</span>)
+<span class="kw">def</span> <span class="fn">expensive_view</span>(request): ...</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="20">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q20</span>
+    <span class="qa-q">What is <code>transaction.atomic()</code> and why is it important?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>transaction.atomic()</code> wraps database operations in a single transaction. If any operation inside raises an exception, <strong>all changes are rolled back</strong> — none of the partial changes remain.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">transactions.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.db <span class="kw">import</span> transaction
+
+<span class="cm"># If payment.save() fails, order.save() is also rolled back</span>
+<span class="kw">with</span> transaction.<span class="fn">atomic</span>():
+    order = Order.objects.<span class="fn">create</span>(user=user, total=amount)
+    Payment.objects.<span class="fn">create</span>(order=order, status=<span class="str">'paid'</span>)
+    Inventory.objects.<span class="fn">filter</span>(product=product).<span class="fn">update</span>(
+        quantity=F(<span class="str">'quantity'</span>) - <span class="num">1</span>
+    )</pre></div>
+    <div class="ans-tip tip-red"><strong>Use this for:</strong> any operation that involves multiple saves that must all succeed or all fail — orders, payments, inventory, financial transactions.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="21">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q21</span>
+    <span class="qa-q">Explain Django's <code>Q</code> objects and when to use them.</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Q objects allow complex queries with <strong>OR, AND, NOT</strong> logic. Chaining <code>.filter()</code> calls adds AND conditions. To use OR you need Q objects.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">q_objects.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.db.models <span class="kw">import</span> Q
+
+<span class="cm"># OR query — posts by user OR published</span>
+Post.objects.<span class="fn">filter</span>(Q(author=user) | Q(status=<span class="str">'published'</span>))
+
+<span class="cm"># AND with OR</span>
+Post.objects.<span class="fn">filter</span>(
+    Q(title__icontains=<span class="str">'django'</span>) | Q(body__icontains=<span class="str">'django'</span>),
+    status=<span class="str">'published'</span>
+)
+
+<span class="cm"># NOT</span>
+Post.objects.<span class="fn">filter</span>(~Q(status=<span class="str">'draft'</span>))</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="22">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q22</span>
+    <span class="qa-q">What are Django <code>annotate()</code> and <code>aggregate()</code>? What's the difference?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Method</th><th>Returns</th><th>SQL equivalent</th></tr><tr><td>aggregate()</td><td>Single dict with summary value</td><td>SELECT COUNT(*), AVG() from whole table</td></tr><tr><td>annotate()</td><td>QuerySet with extra field per row</td><td>SELECT *, COUNT() ... GROUP BY id</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">aggregation.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.db.models <span class="kw">import</span> Count, Avg, Sum
+
+<span class="cm"># aggregate — one result for the whole queryset</span>
+result = Post.objects.<span class="fn">aggregate</span>(total=Count(<span class="str">'id'</span>), avg_views=Avg(<span class="str">'views'</span>))
+<span class="cm"># {'total': 150, 'avg_views': 42.3}</span>
+
+<span class="cm"># annotate — adds a value to each object in the queryset</span>
+categories = Category.objects.<span class="fn">annotate</span>(post_count=Count(<span class="str">'posts'</span>))
+<span class="kw">for</span> cat <span class="kw">in</span> categories:
+    print(cat.name, cat.post_count)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="23">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q23</span>
+    <span class="qa-q">How do you handle file uploads in Django?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">file_upload.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># Model</span>
+<span class="kw">class</span> <span class="cls">Document</span>(models.<span class="cls">Model</span>):
+    file  = models.<span class="cls">FileField</span>(upload_to=<span class="str">'documents/%Y/%m/%d/'</span>)
+    image = models.<span class="cls">ImageField</span>(upload_to=<span class="str">'images/'</span>)  <span class="cm"># requires Pillow</span>
+
+<span class="cm"># settings.py</span>
+MEDIA_URL  = <span class="str">'/media/'</span>
+MEDIA_ROOT = BASE_DIR / <span class="str">'media'</span>
+
+<span class="cm"># urls.py (dev only)</span>
+<span class="kw">from</span> django.conf.urls.static <span class="kw">import</span> static
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+<span class="cm"># Access uploaded file</span>
+document.file.url   <span class="cm"># URL to access the file</span>
+document.file.name  <span class="cm"># filename</span>
+document.file.size  <span class="cm"># file size in bytes</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="24">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q24</span>
+    <span class="qa-q">What are Django custom managers and when do you use them?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Custom managers add extra methods to <code>Model.objects</code> or filter the default queryset. They encapsulate reusable query logic.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">custom_manager.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PublishedManager</span>(models.<span class="cls">Manager</span>):
+    <span class="kw">def</span> <span class="fn">get_queryset</span>(self):
+        <span class="kw">return super</span>().<span class="fn">get_queryset</span>().<span class="fn">filter</span>(status=<span class="str">'published'</span>)
+
+    <span class="kw">def</span> <span class="fn">by_author</span>(self, user):
+        <span class="kw">return</span> self.<span class="fn">get_queryset</span>().<span class="fn">filter</span>(author=user)
+
+<span class="kw">class</span> <span class="cls">Post</span>(models.<span class="cls">Model</span>):
+    objects   = models.<span class="cls">Manager</span>()        <span class="cm"># default</span>
+    published = <span class="cls">PublishedManager</span>()       <span class="cm"># custom</span>
+
+<span class="cm"># Usage</span>
+Post.published.<span class="fn">all</span>()
+Post.published.<span class="fn">by_author</span>(user)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="25">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q25</span>
+    <span class="qa-q">How does Django's <code>F()</code> expression work?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>F()</code> expressions let you reference model field values in database operations <strong>without loading the object into Python</strong>. This avoids race conditions and is more efficient.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">f_expression.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.db.models <span class="kw">import</span> F
+
+<span class="cm"># BAD — race condition: read-modify-write</span>
+product = Product.objects.<span class="fn">get</span>(pk=<span class="num">1</span>)
+product.stock -= <span class="num">1</span>
+product.<span class="fn">save</span>()
+
+<span class="cm"># GOOD — F() expression: atomic update in SQL</span>
+Product.objects.<span class="fn">filter</span>(pk=<span class="num">1</span>).<span class="fn">update</span>(stock=F(<span class="str">'stock'</span>) - <span class="num">1</span>)
+
+<span class="cm"># Comparing two fields</span>
+Post.objects.<span class="fn">filter</span>(views__gt=F(<span class="str">'likes'</span>))</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="26">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q26</span>
+    <span class="qa-q">What is the purpose of <code>Meta</code> class in Django models?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">The <code>Meta</code> class provides <strong>model metadata</strong> — options that affect how Django handles the model. It doesn't define fields.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">meta_class.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">Post</span>(models.<span class="cls">Model</span>):
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        ordering         = [<span class="str">'-created'</span>]           <span class="cm"># default sort</span>
+        db_table         = <span class="str">'blog_posts'</span>            <span class="cm"># custom table name</span>
+        verbose_name     = <span class="str">'article'</span>               <span class="cm"># admin display name</span>
+        verbose_name_plural = <span class="str">'articles'</span>
+        indexes          = [models.<span class="cls">Index</span>(fields=[<span class="str">'status'</span>,<span class="str">'-created'</span>])]
+        unique_together  = [((<span class="str">'author'</span>, <span class="str">'slug'</span>))]   <span class="cm"># composite unique</span>
+        permissions      = [(<span class="str">'publish_post'</span>, <span class="str">'Can publish post'</span>)]</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="27">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q27</span>
+    <span class="qa-q">What are Django template tags and filters? Give examples.</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><strong>Template tags</strong> perform logic: <code>{% for %}</code>, <code>{% if %}</code>, <code>{% block %}</code>, <code>{% include %}</code>. <strong>Filters</strong> transform variables: <code>{{ value|filter }}</code>.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">template.html</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre>{% for post in posts %}
+  {{ post.title|upper }}
+  {{ post.created|date:"d M Y" }}
+  {{ post.body|truncatewords:30 }}
+  {% if post.status == "published" %}...{% endif %}
+{% empty %}
+  No posts yet.
+{% endfor %}
+
+{% block content %}{% endblock %}  {# template inheritance #}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="28">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q28</span>
+    <span class="qa-q">How does Django send emails?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">email.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.core.mail <span class="kw">import</span> send_mail, send_mass_mail
+<span class="kw">from</span> django.core.mail <span class="kw">import</span> EmailMultiAlternatives
+
+<span class="cm"># Simple email</span>
+<span class="fn">send_mail</span>(
+    subject=<span class="str">'Welcome!'</span>, message=<span class="str">'Thanks for signing up.'</span>,
+    from_email=<span class="str">'noreply@mysite.com'</span>, recipient_list=[<span class="str">'user@example.com'</span>]
+)
+
+<span class="cm"># HTML email</span>
+email = <span class="cls">EmailMultiAlternatives</span>(
+    subject=<span class="str">'Welcome'</span>, body=<span class="str">'Plain text fallback'</span>,
+    from_email=<span class="str">'from@mysite.com'</span>, to=[<span class="str">'user@example.com'</span>]
+)
+email.<span class="fn">attach_alternative</span>(<span class="str">'&lt;h1&gt;Welcome!&lt;/h1&gt;'</span>, <span class="str">'text/html'</span>)
+email.<span class="fn">send</span>()</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="29">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q29</span>
+    <span class="qa-q">What are Django forms and how do they differ from model forms?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th></th><th>Form</th><th>ModelForm</th></tr><tr><td>Based on</td><td>Custom fields you define</td><td>Automatically from a model</td></tr><tr><td>Save method</td><td>Manual — process cleaned_data yourself</td><td>form.save() saves to DB</td></tr><tr><td>Use when</td><td>Contact forms, search forms, login</td><td>Create/Edit model instances</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">forms.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostForm</span>(forms.<span class="cls">ModelForm</span>):
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        model = Post
+        fields = [<span class="str">'title'</span>, <span class="str">'body'</span>, <span class="str">'category'</span>]
+        widgets = {<span class="str">'body'</span>: forms.<span class="cls">Textarea</span>(attrs={<span class="str">'rows'</span>: <span class="num">10</span>})}
+
+<span class="cm"># In view</span>
+form = <span class="cls">PostForm</span>(request.POST)
+<span class="kw">if</span> form.<span class="fn">is_valid</span>():
+    post = form.<span class="fn">save</span>(commit=<span class="kw">False</span>)
+    post.author = request.user
+    post.<span class="fn">save</span>()</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-mid" data-level="mid" data-id="30">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q30</span>
+    <span class="qa-q">How do you implement pagination in Django?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">pagination.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.core.paginator <span class="kw">import</span> Paginator
+
+<span class="kw">def</span> <span class="fn">post_list</span>(request):
+    posts = Post.objects.<span class="fn">all</span>()
+    paginator = <span class="cls">Paginator</span>(posts, <span class="num">20</span>)  <span class="cm"># 20 per page</span>
+    page_num = request.GET.<span class="fn">get</span>(<span class="str">'page'</span>, <span class="num">1</span>)
+    page = paginator.<span class="fn">get_page</span>(page_num)
+    <span class="kw">return</span> <span class="fn">render</span>(request, <span class="str">'posts.html'</span>, {<span class="str">'page'</span>: page})
+
+<span class="cm"># In template</span>
+<span class="cm">{% if page.has_previous %}&lt;a href="?page={{ page.previous_page_number }}"&gt;Prev&lt;/a&gt;{% endif %}</span>
+<span class="cm">{% if page.has_next %}&lt;a href="?page={{ page.next_page_number }}"&gt;Next&lt;/a&gt;{% endif %}</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- ===== DJANGO ADVANCED ===== -->
+<div class="level-row" style="margin-top:40px"><span class="level-badge lb-adv">Advanced</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="dj-adv" data-level="adv" data-id="31">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q31</span>
+    <span class="qa-q">How would you write custom Django middleware?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">middleware.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="cls">RequestTimingMiddleware</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, get_response):
+        self.get_response = get_response  <span class="cm"># called once on startup</span>
+
+    <span class="kw">def</span> <span class="fn">__call__</span>(self, request):
+        start = time.<span class="fn">time</span>()
+        response = self.<span class="fn">get_response</span>(request)  <span class="cm"># calls the view</span>
+        duration = time.<span class="fn">time</span>() - start
+        response[<span class="str">'X-Response-Time'</span>] = <span class="str">f'{duration:.3f}s'</span>
+        <span class="kw">return</span> response
+
+<span class="cm"># Add to settings.py MIDDLEWARE list</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-adv" data-level="adv" data-id="32">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q32</span>
+    <span class="qa-q">What is Django's <code>contenttypes</code> framework and generic relations?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">The <code>contenttypes</code> framework tracks all models in your project. <code>GenericForeignKey</code> lets one model relate to any other model. Used for likes, comments, tags that work across multiple content types.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">generic_relation.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.contrib.contenttypes.fields <span class="kw">import</span> GenericForeignKey
+<span class="kw">from</span> django.contrib.contenttypes.models <span class="kw">import</span> ContentType
+
+<span class="kw">class</span> <span class="cls">Comment</span>(models.<span class="cls">Model</span>):
+    content_type   = models.<span class="cls">ForeignKey</span>(ContentType, on_delete=models.<span class="cls">CASCADE</span>)
+    object_id      = models.<span class="cls">PositiveIntegerField</span>()
+    content_object = <span class="cls">GenericForeignKey</span>(<span class="str">'content_type'</span>, <span class="str">'object_id'</span>)
+    text           = models.<span class="cls">TextField</span>()
+
+<span class="cm"># Comment on a Post</span>
+<span class="cls">Comment</span>.objects.<span class="fn">create</span>(content_object=post, text=<span class="str">'Great!'</span>)
+<span class="cm"># Comment on a Product</span>
+<span class="cls">Comment</span>.objects.<span class="fn">create</span>(content_object=product, text=<span class="str">'Nice!'</span>)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-adv" data-level="adv" data-id="33">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q33</span>
+    <span class="qa-q">How do you optimize Django for production? (Performance checklist)</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <ul class="ans-list">
+      <li><strong>DEBUG=False</strong> — disables debug mode, enables caching of templates</li>
+      <li><strong>Database indexes</strong> — add <code>db_index=True</code> on filtered/sorted fields</li>
+      <li><strong>select_related / prefetch_related</strong> — eliminate N+1 queries</li>
+      <li><strong>Redis caching</strong> — cache querysets, views, template fragments</li>
+      <li><strong>only() / defer()</strong> — fetch only needed columns from DB</li>
+      <li><strong>Celery</strong> — offload slow tasks (emails, file processing) to background workers</li>
+      <li><strong>Gunicorn + Nginx</strong> — production WSGI server + reverse proxy</li>
+      <li><strong>CDN for static/media files</strong> — AWS S3, Cloudflare</li>
+      <li><strong>Database connection pooling</strong> — PgBouncer (PostgreSQL) or persistent MySQL connections</li>
+    </ul>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-adv" data-level="adv" data-id="34">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q34</span>
+    <span class="qa-q">What is <code>only()</code> and <code>defer()</code> in Django QuerySets?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Both limit which database columns are fetched. Use when you don't need all fields — saves memory and DB bandwidth.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">only_defer.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># only() — fetch ONLY these fields (defers everything else)</span>
+posts = Post.objects.<span class="fn">only</span>(<span class="str">'id'</span>, <span class="str">'title'</span>, <span class="str">'created'</span>)
+
+<span class="cm"># defer() — fetch everything EXCEPT these fields</span>
+posts = Post.objects.<span class="fn">defer</span>(<span class="str">'body'</span>)  <span class="cm"># skip large text column</span>
+
+<span class="cm"># values() — returns dicts instead of objects (fastest for read-only)</span>
+posts = Post.objects.<span class="fn">values</span>(<span class="str">'id'</span>, <span class="str">'title'</span>)
+<span class="cm"># [{'id': 1, 'title': 'Hello'}, ...]</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-adv" data-level="adv" data-id="35">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q35</span>
+    <span class="qa-q">How do you write unit tests in Django?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">tests.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> django.test <span class="kw">import</span> TestCase, Client
+<span class="kw">from</span> django.contrib.auth.models <span class="kw">import</span> User
+<span class="kw">from</span> .models <span class="kw">import</span> Post
+
+<span class="kw">class</span> <span class="cls">PostModelTest</span>(TestCase):
+    <span class="kw">def</span> <span class="fn">setUp</span>(self):
+        self.user = User.objects.<span class="fn">create_user</span>(<span class="str">'testuser'</span>, password=<span class="str">'pass'</span>)
+        self.post = Post.objects.<span class="fn">create</span>(title=<span class="str">'Test'</span>, author=self.user)
+
+    <span class="kw">def</span> <span class="fn">test_post_str</span>(self):
+        self.<span class="fn">assertEqual</span>(str(self.post), <span class="str">'Test'</span>)
+
+    <span class="kw">def</span> <span class="fn">test_post_list_view</span>(self):
+        client = <span class="cls">Client</span>()
+        response = client.<span class="fn">get</span>(<span class="str">'/posts/'</span>)
+        self.<span class="fn">assertEqual</span>(response.status_code, <span class="num">200</span>)
+
+<span class="cm"># Run: python manage.py test</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="dj-adv" data-level="adv" data-id="36">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q36</span>
+    <span class="qa-q">What is Django Celery and when do you use it?</span>
+    <span class="qa-tag tag-dj">Django</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Celery is an asynchronous task queue. Django views should respond in under 200ms. If a task takes longer (sending emails, resizing images, generating reports), offload it to Celery so the user isn't waiting.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">tasks.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> celery <span class="kw">import</span> shared_task
+<span class="kw">from</span> django.core.mail <span class="kw">import</span> send_mail
+
+<span class="dec">@shared_task</span>
+<span class="kw">def</span> <span class="fn">send_welcome_email</span>(user_id):
+    user = User.objects.<span class="fn">get</span>(pk=user_id)
+    <span class="fn">send_mail</span>(<span class="str">'Welcome!'</span>, <span class="str">'Thanks for joining.'</span>,
+               <span class="str">'noreply@app.com'</span>, [user.email])
+
+<span class="cm"># In a view — non-blocking, returns immediately</span>
+<span class="fn">send_welcome_email</span>.<span class="fn">delay</span>(user.pk)
+<span class="cm"># Celery worker processes it in the background</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- ===== DRF BASICS ===== -->
+<div class="sec-header" style="padding-top:60px;"><span class="sec-badge htag-drf">DRF — Basics</span><h2 class="sec-title">Django REST Framework</h2></div>
+<div class="level-row"><span class="level-badge lb-basic">Beginner</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="37">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q37</span>
+    <span class="qa-q">What is Django REST Framework (DRF) and why use it?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">DRF is a toolkit for building Web APIs in Django. It provides serializers (convert data to/from JSON), authentication, permissions, viewsets, routers, and a browsable API interface. It's the industry standard for building REST APIs with Django.</p>
+    <ul class="ans-list">
+      <li><strong>Serialization</strong> — converts models to JSON and validates input</li>
+      <li><strong>Authentication</strong> — JWT, Token, Session, OAuth2 support</li>
+      <li><strong>Permissions</strong> — fine-grained access control</li>
+      <li><strong>ViewSets + Routers</strong> — auto-generate URLs for CRUD endpoints</li>
+      <li><strong>Browsable API</strong> — built-in HTML interface for testing</li>
+      <li><strong>Filtering + Pagination</strong> — built-in support</li>
+    </ul>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="38">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q38</span>
+    <span class="qa-q">What is a serializer in DRF? What does it do?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">A serializer does two things: <strong>Serialization</strong> (Python object → JSON for API responses) and <strong>Deserialization</strong> (JSON → validated Python object for saving to DB). It also validates incoming data.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">serializers.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        model = Post
+        fields = [<span class="str">'id'</span>, <span class="str">'title'</span>, <span class="str">'body'</span>, <span class="str">'status'</span>, <span class="str">'created'</span>]
+        read_only_fields = [<span class="str">'id'</span>, <span class="str">'created'</span>]
+
+<span class="cm"># Serialization (object → JSON)</span>
+serializer = <span class="cls">PostSerializer</span>(post)
+data = serializer.data  <span class="cm"># {'id': 1, 'title': 'Hello', ...}</span>
+
+<span class="cm"># Deserialization (JSON → validated object)</span>
+serializer = <span class="cls">PostSerializer</span>(data=request.data)
+<span class="kw">if</span> serializer.<span class="fn">is_valid</span>():
+    post = serializer.<span class="fn">save</span>(author=request.user)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="39">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q39</span>
+    <span class="qa-q">What is the difference between <code>Serializer</code> and <code>ModelSerializer</code>?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th></th><th>Serializer</th><th>ModelSerializer</th></tr><tr><td>Field definition</td><td>Manual — define every field yourself</td><td>Auto-generated from model Meta</td></tr><tr><td>save()</td><td>Must implement create() and update()</td><td>Auto-implements create() and update()</td></tr><tr><td>Validation</td><td>Custom only</td><td>Model validators + custom</td></tr><tr><td>Use when</td><td>Non-model data (login, custom views)</td><td>CRUD on model instances (most cases)</td></tr></table>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="40">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q40</span>
+    <span class="qa-q">What is a ViewSet and how does it differ from APIView?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th></th><th>APIView</th><th>ViewSet</th></tr><tr><td>URL setup</td><td>Manual — define each URL separately</td><td>Automatic via Router</td></tr><tr><td>Methods</td><td>get(), post(), put(), delete()</td><td>list(), create(), retrieve(), update(), destroy()</td></tr><tr><td>Best for</td><td>Custom endpoints, non-CRUD operations</td><td>Standard CRUD operations</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">viewset_example.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># ViewSet — router auto-generates /posts/ and /posts/{id}/</span>
+<span class="kw">class</span> <span class="cls">PostViewSet</span>(viewsets.<span class="cls">ModelViewSet</span>):
+    queryset = Post.objects.<span class="fn">all</span>()
+    serializer_class = PostSerializer
+
+<span class="cm"># urls.py</span>
+router = DefaultRouter()
+router.<span class="fn">register</span>(<span class="str">'posts'</span>, PostViewSet)
+urlpatterns = [path(<span class="str">'api/'</span>, include(router.urls))]</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="41">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q41</span>
+    <span class="qa-q">What are DRF permissions? Name the built-in ones.</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Permissions control who can access a view. DRF checks them before the view runs.</p>
+    <table class="ctbl"><tr><th>Permission Class</th><th>Behavior</th></tr><tr><td>AllowAny</td><td>No restriction — anyone can access</td></tr><tr><td>IsAuthenticated</td><td>Must be logged in</td></tr><tr><td>IsAdminUser</td><td>Must be staff/admin</td></tr><tr><td>IsAuthenticatedOrReadOnly</td><td>Authenticated for write, anyone for read</td></tr><tr><td>DjangoModelPermissions</td><td>Based on Django model permissions (add/change/delete)</td></tr><tr><td>DjangoObjectPermissions</td><td>Per-object permissions</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">permissions.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># Custom permission</span>
+<span class="kw">class</span> <span class="cls">IsOwnerOrReadOnly</span>(permissions.<span class="cls">BasePermission</span>):
+    <span class="kw">def</span> <span class="fn">has_object_permission</span>(self, request, view, obj):
+        <span class="kw">if</span> request.method <span class="kw">in</span> permissions.SAFE_METHODS:
+            <span class="kw">return True</span>
+        <span class="kw">return</span> obj.author == request.user</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="42">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q42</span>
+    <span class="qa-q">How does authentication work in DRF?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Authentication identifies who is making the request. DRF populates <code>request.user</code> based on the authentication class used.</p>
+    <table class="ctbl"><tr><th>Auth Class</th><th>How it works</th><th>Best for</th></tr><tr><td>SessionAuthentication</td><td>Uses Django session cookie</td><td>Browser clients, traditional Django</td></tr><tr><td>TokenAuthentication</td><td>Token in Authorization header</td><td>Simple API clients</td></tr><tr><td>JWTAuthentication</td><td>JWT token (simplejwt)</td><td>SPAs, mobile apps (recommended)</td></tr><tr><td>BasicAuthentication</td><td>Username/password in header (base64)</td><td>Development/testing only</td></tr></table>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="43">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q43</span>
+    <span class="qa-q">What is JWT authentication? How does it work in DRF?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">JWT (JSON Web Token) is a stateless authentication mechanism. The server issues a signed token; the client sends it with every request. The server verifies the signature — no DB lookup needed.</p>
+    <ul class="ans-list">
+      <li><strong>Access token</strong> — short-lived (5-15 min), sent on every request in Authorization header</li>
+      <li><strong>Refresh token</strong> — long-lived (7 days), used only to get a new access token</li>
+      <li><strong>Stateless</strong> — server doesn't store sessions; any server can verify the token</li>
+    </ul>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">jwt_setup.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># pip install djangorestframework-simplejwt</span>
+REST_FRAMEWORK = {
+    <span class="str">'DEFAULT_AUTHENTICATION_CLASSES'</span>: (
+        <span class="str">'rest_framework_simplejwt.authentication.JWTAuthentication'</span>,
+    ),
+}
+
+<span class="cm"># urls.py</span>
+path(<span class="str">'api/token/'</span>, TokenObtainPairView.as_view()),
+path(<span class="str">'api/token/refresh/'</span>, TokenRefreshView.as_view()),
+
+<span class="cm"># Client: POST /api/token/ → get tokens</span>
+<span class="cm"># Every request: Authorization: Bearer &lt;access_token&gt;</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="44">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q44</span>
+    <span class="qa-q">How do you handle validation in DRF serializers?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">validation.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="cm"># Field-level validation</span>
+    <span class="kw">def</span> <span class="fn">validate_title</span>(self, value):
+        <span class="kw">if</span> <span class="fn">len</span>(value) < <span class="num">5</span>:
+            <span class="kw">raise</span> serializers.<span class="cls">ValidationError</span>(<span class="str">"Title too short."</span>)
+        <span class="kw">return</span> value.<span class="fn">capitalize</span>()
+
+    <span class="cm"># Object-level validation (multiple fields)</span>
+    <span class="kw">def</span> <span class="fn">validate</span>(self, data):
+        <span class="kw">if</span> data[<span class="str">'start_date'</span>] >= data[<span class="str">'end_date'</span>]:
+            <span class="kw">raise</span> serializers.<span class="cls">ValidationError</span>(<span class="str">"End must be after start."</span>)
+        <span class="kw">return</span> data
+
+<span class="cm"># Check validity before saving</span>
+serializer = <span class="cls">PostSerializer</span>(data=request.data)
+<span class="kw">if</span> serializer.<span class="fn">is_valid</span>():
+    serializer.<span class="fn">save</span>()
+<span class="kw">else</span>:
+    <span class="kw">return</span> <span class="cls">Response</span>(serializer.errors, status=<span class="num">400</span>)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="45">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q45</span>
+    <span class="qa-q">How does DRF pagination work?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">pagination.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># settings.py — global pagination</span>
+REST_FRAMEWORK = {
+    <span class="str">'DEFAULT_PAGINATION_CLASS'</span>: <span class="str">'rest_framework.pagination.PageNumberPagination'</span>,
+    <span class="str">'PAGE_SIZE'</span>: <span class="num">20</span>
+}
+
+<span class="cm"># Custom pagination class</span>
+<span class="kw">class</span> <span class="cls">StandardPagination</span>(PageNumberPagination):
+    page_size = <span class="num">20</span>
+    page_size_query_param = <span class="str">'page_size'</span>  <span class="cm"># allow ?page_size=50</span>
+    max_page_size = <span class="num">100</span>
+
+<span class="cm"># Response format:</span>
+<span class="cm"># {"count": 150, "next": "?page=2", "previous": null, "results": [...]}</span></pre></div>
+    <p class="ans-text">DRF also provides <strong>CursorPagination</strong> (most efficient for large datasets) and <strong>LimitOffsetPagination</strong> (<code>?limit=20&offset=40</code> style).</p>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf" data-level="basic" data-id="46">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q46</span>
+    <span class="qa-q">What HTTP status codes should a REST API return?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Action</th><th>Status Code</th><th>Meaning</th></tr><tr><td>GET (found)</td><td>200 OK</td><td>Success, data in body</td></tr><tr><td>POST (created)</td><td>201 Created</td><td>New resource created</td></tr><tr><td>DELETE</td><td>204 No Content</td><td>Success, no body returned</td></tr><tr><td>PUT/PATCH</td><td>200 OK</td><td>Updated successfully</td></tr><tr><td>Validation error</td><td>400 Bad Request</td><td>Invalid input data</td></tr><tr><td>Not authenticated</td><td>401 Unauthorized</td><td>Need to login</td></tr><tr><td>No permission</td><td>403 Forbidden</td><td>Authenticated but not allowed</td></tr><tr><td>Not found</td><td>404 Not Found</td><td>Resource doesn't exist</td></tr><tr><td>Server error</td><td>500 Internal Server Error</td><td>Something broke</td></tr></table>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- DRF INTERMEDIATE -->
+<div class="level-row" style="margin-top:40px"><span class="level-badge lb-mid">Intermediate</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="51">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q51</span>
+    <span class="qa-q">How do you use nested serializers to represent related objects?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">nested_serializer.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">AuthorSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        model = User
+        fields = [<span class="str">'id'</span>, <span class="str">'username'</span>, <span class="str">'email'</span>]
+
+<span class="kw">class</span> <span class="cls">PostSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="cm"># Read: returns full author object</span>
+    author = <span class="cls">AuthorSerializer</span>(read_only=<span class="kw">True</span>)
+    <span class="cm"># Write: accepts author_id integer</span>
+    author_id = serializers.<span class="cls">PrimaryKeyRelatedField</span>(
+        queryset=User.objects.<span class="fn">all</span>(), source=<span class="str">'author'</span>, write_only=<span class="kw">True</span>
+    )
+
+<span class="cm"># GET response: {"author": {"id":1, "username":"ali", "email":"..."}}</span>
+<span class="cm"># POST request: {"author_id": 1, "title": "Hello"}</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="52">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q52</span>
+    <span class="qa-q">What is <code>SerializerMethodField</code> and when do you use it?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>SerializerMethodField</code> lets you add computed/custom fields to a serializer that don't directly map to a model field. The method must be named <code>get_&lt;field_name&gt;</code>.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">method_field.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    full_author_name  = serializers.<span class="cls">SerializerMethodField</span>()
+    comment_count     = serializers.<span class="cls">SerializerMethodField</span>()
+    is_liked          = serializers.<span class="cls">SerializerMethodField</span>()
+
+    <span class="kw">def</span> <span class="fn">get_full_author_name</span>(self, obj):
+        <span class="kw">return</span> obj.author.get_full_name()
+
+    <span class="kw">def</span> <span class="fn">get_comment_count</span>(self, obj):
+        <span class="kw">return</span> obj.comments.<span class="fn">count</span>()
+
+    <span class="kw">def</span> <span class="fn">get_is_liked</span>(self, obj):
+        request = self.context.get(<span class="str">'request'</span>)
+        <span class="kw">if not</span> request or <span class="kw">not</span> request.user.is_authenticated:
+            <span class="kw">return False</span>
+        <span class="kw">return</span> obj.likes.filter(user=request.user).<span class="fn">exists</span>()</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="53">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q53</span>
+    <span class="qa-q">How do you override <code>get_queryset()</code> in a ViewSet and why?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Override <code>get_queryset()</code> to dynamically filter data based on the request — usually to implement data isolation (users only see their own data) or URL-based filtering.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">viewset_queryset.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostViewSet</span>(viewsets.<span class="cls">ModelViewSet</span>):
+    serializer_class = PostSerializer
+
+    <span class="kw">def</span> <span class="fn">get_queryset</span>(self):
+        user = self.request.user
+        qs = Post.objects.<span class="fn">select_related</span>(<span class="str">'author'</span>, <span class="str">'category'</span>)
+
+        <span class="cm"># Staff sees all; regular users see only their own</span>
+        <span class="kw">if not</span> user.is_staff:
+            qs = qs.<span class="fn">filter</span>(author=user)
+
+        <span class="cm"># Optional URL filter: /api/posts/?status=published</span>
+        status = self.request.query_params.<span class="fn">get</span>(<span class="str">'status'</span>)
+        <span class="kw">if</span> status:
+            qs = qs.<span class="fn">filter</span>(status=status)
+
+        <span class="kw">return</span> qs</pre></div>
+    <div class="ans-tip tip-red"><strong>Security critical:</strong> Always filter by ownership in get_queryset(). Returning all objects by default is a data leak vulnerability.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="54">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q54</span>
+    <span class="qa-q">What are DRF custom actions (<code>@action</code> decorator)?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">The <code>@action</code> decorator adds custom endpoints to a ViewSet beyond the standard CRUD operations.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">custom_actions.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostViewSet</span>(viewsets.<span class="cls">ModelViewSet</span>):
+
+    <span class="dec">@action</span>(detail=<span class="kw">True</span>, methods=[<span class="str">'post'</span>])   <span class="cm"># POST /api/posts/1/publish/</span>
+    <span class="kw">def</span> <span class="fn">publish</span>(self, request, pk=<span class="kw">None</span>):
+        post = self.<span class="fn">get_object</span>()
+        post.status = <span class="str">'published'</span>
+        post.<span class="fn">save</span>()
+        <span class="kw">return</span> <span class="cls">Response</span>({<span class="str">'status'</span>: <span class="str">'published'</span>})
+
+    <span class="dec">@action</span>(detail=<span class="kw">False</span>, methods=[<span class="str">'get'</span>])  <span class="cm"># GET /api/posts/trending/</span>
+    <span class="kw">def</span> <span class="fn">trending</span>(self, request):
+        posts = Post.objects.<span class="fn">order_by</span>(<span class="str">'-views'</span>)[:<span class="num">10</span>]
+        serializer = self.<span class="fn">get_serializer</span>(posts, many=<span class="kw">True</span>)
+        <span class="kw">return</span> <span class="cls">Response</span>(serializer.data)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="55">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q55</span>
+    <span class="qa-q">How does filtering work in DRF?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">filtering.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># pip install django-filter</span>
+<span class="kw">from</span> rest_framework <span class="kw">import</span> filters
+<span class="kw">from</span> django_filters.rest_framework <span class="kw">import</span> DjangoFilterBackend
+
+<span class="kw">class</span> <span class="cls">PostViewSet</span>(viewsets.<span class="cls">ModelViewSet</span>):
+    filter_backends  = [DjangoFilterBackend, filters.<span class="cls">SearchFilter</span>, filters.<span class="cls">OrderingFilter</span>]
+    filterset_fields = [<span class="str">'status'</span>, <span class="str">'category'</span>]  <span class="cm"># ?status=published&category=1</span>
+    search_fields    = [<span class="str">'title'</span>, <span class="str">'body'</span>]         <span class="cm"># ?search=django</span>
+    ordering_fields  = [<span class="str">'created'</span>, <span class="str">'title'</span>]      <span class="cm"># ?ordering=-created</span>
+
+<span class="cm"># Example URLs:</span>
+<span class="cm"># GET /api/posts/?status=published&search=python&ordering=-created</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="56">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q56</span>
+    <span class="qa-q">How do you handle file uploads in DRF?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">file_upload_drf.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">UploadSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        model = Upload
+        fields = [<span class="str">'id'</span>, <span class="str">'file'</span>, <span class="str">'uploaded_at'</span>]
+
+<span class="kw">class</span> <span class="cls">UploadView</span>(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    <span class="kw">def</span> <span class="fn">post</span>(self, request):
+        serializer = <span class="cls">UploadSerializer</span>(data=request.data)
+        <span class="kw">if</span> serializer.<span class="fn">is_valid</span>():
+            serializer.<span class="fn">save</span>()
+            <span class="kw">return</span> <span class="cls">Response</span>(serializer.data, status=<span class="num">201</span>)
+        <span class="kw">return</span> <span class="cls">Response</span>(serializer.errors, status=<span class="num">400</span>)
+
+<span class="cm"># Frontend: use FormData, do NOT set Content-Type header manually!</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="57">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q57</span>
+    <span class="qa-q">What is the difference between <code>perform_create()</code> and <code>create()</code> in ViewSets?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Method</th><th>Where to override</th><th>Use for</th></tr><tr><td>create()</td><td>ViewSet or Serializer</td><td>Change the entire create flow, response format</td></tr><tr><td>perform_create()</td><td>ViewSet</td><td>Inject extra data at save time (e.g., author, organization)</td></tr><tr><td>save() in serializer</td><td>Serializer</td><td>Complex multi-model creation</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">perform_create.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">class</span> <span class="cls">PostViewSet</span>(viewsets.<span class="cls">ModelViewSet</span>):
+    <span class="cm"># Inject current user as author — the correct pattern</span>
+    <span class="kw">def</span> <span class="fn">perform_create</span>(self, serializer):
+        serializer.<span class="fn">save</span>(author=self.request.user)
+
+    <span class="cm"># Override create() to return custom response</span>
+    <span class="kw">def</span> <span class="fn">create</span>(self, request, *args, **kwargs):
+        response = super().<span class="fn">create</span>(request, *args, **kwargs)
+        response.data[<span class="str">'message'</span>] = <span class="str">'Post created successfully'</span>
+        <span class="kw">return</span> response</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-mid" data-level="mid" data-id="58">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q58</span>
+    <span class="qa-q">How do you version a REST API in DRF?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">API versioning allows you to make breaking changes without affecting existing clients. Common approaches:</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">versioning.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># settings.py</span>
+REST_FRAMEWORK = {
+    <span class="str">'DEFAULT_VERSIONING_CLASS'</span>: <span class="str">'rest_framework.versioning.URLPathVersioning'</span>,
+    <span class="str">'DEFAULT_VERSION'</span>: <span class="str">'v1'</span>,
+    <span class="str">'ALLOWED_VERSIONS'</span>: [<span class="str">'v1'</span>, <span class="str">'v2'</span>],
+}
+
+<span class="cm"># urls.py</span>
+path(<span class="str">'api/&lt;version&gt;/posts/'</span>, PostViewSet...)
+
+<span class="cm"># In view — check version and respond differently</span>
+<span class="kw">def</span> <span class="fn">get_serializer_class</span>(self):
+    <span class="kw">if</span> self.request.version == <span class="str">'v2'</span>:
+        <span class="kw">return</span> PostSerializerV2
+    <span class="kw">return</span> PostSerializer</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- DRF ADVANCED -->
+<div class="level-row" style="margin-top:40px"><span class="level-badge lb-adv">Advanced</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="drf-adv" data-level="adv" data-id="64">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q64</span>
+    <span class="qa-q">How do you write custom DRF exception handling?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">exceptions.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> rest_framework.views <span class="kw">import</span> exception_handler
+<span class="kw">from</span> rest_framework.response <span class="kw">import</span> Response
+
+<span class="kw">def</span> <span class="fn">custom_exception_handler</span>(exc, context):
+    response = <span class="fn">exception_handler</span>(exc, context)
+    <span class="kw">if</span> response <span class="kw">is not None</span>:
+        response.data = {
+            <span class="str">'error'</span>: <span class="kw">True</span>,
+            <span class="str">'status_code'</span>: response.status_code,
+            <span class="str">'message'</span>: response.data
+        }
+    <span class="kw">return</span> response
+
+<span class="cm"># settings.py</span>
+REST_FRAMEWORK = {
+    <span class="str">'EXCEPTION_HANDLER'</span>: <span class="str">'myapp.exceptions.custom_exception_handler'</span>
+}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-adv" data-level="adv" data-id="65">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q65</span>
+    <span class="qa-q">How do you implement throttling / rate limiting in DRF?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">throttling.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm"># settings.py</span>
+REST_FRAMEWORK = {
+    <span class="str">'DEFAULT_THROTTLE_CLASSES'</span>: [
+        <span class="str">'rest_framework.throttling.AnonRateThrottle'</span>,
+        <span class="str">'rest_framework.throttling.UserRateThrottle'</span>
+    ],
+    <span class="str">'DEFAULT_THROTTLE_RATES'</span>: {
+        <span class="str">'anon'</span>:   <span class="str">'100/day'</span>,
+        <span class="str">'user'</span>:   <span class="str">'1000/day'</span>,
+        <span class="str">'login'</span>:  <span class="str">'5/min'</span>   <span class="cm"># custom scope</span>
+    }
+}
+
+<span class="cm"># Per-view throttle</span>
+<span class="kw">class</span> <span class="cls">LoginView</span>(APIView):
+    throttle_scope = <span class="str">'login'</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="drf-adv" data-level="adv" data-id="66">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q66</span>
+    <span class="qa-q">How do you write DRF API tests?</span>
+    <span class="qa-tag tag-drf">DRF</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">api_tests.py</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">from</span> rest_framework.test <span class="kw">import</span> APITestCase, APIClient
+<span class="kw">from</span> rest_framework_simplejwt.tokens <span class="kw">import</span> RefreshToken
+
+<span class="kw">class</span> <span class="cls">PostAPITest</span>(APITestCase):
+    <span class="kw">def</span> <span class="fn">setUp</span>(self):
+        self.user = User.objects.<span class="fn">create_user</span>(<span class="str">'testuser'</span>, password=<span class="str">'pass'</span>)
+        token = RefreshToken.<span class="fn">for_user</span>(self.user)
+        self.client.<span class="fn">credentials</span>(HTTP_AUTHORIZATION=<span class="str">f'Bearer {token.access_token}'</span>)
+
+    <span class="kw">def</span> <span class="fn">test_create_post</span>(self):
+        data = {<span class="str">'title'</span>: <span class="str">'Test Post'</span>, <span class="str">'body'</span>: <span class="str">'Content'</span>}
+        response = self.client.<span class="fn">post</span>(<span class="str">'/api/posts/'</span>, data, format=<span class="str">'json'</span>)
+        self.<span class="fn">assertEqual</span>(response.status_code, <span class="num">201</span>)
+        self.<span class="fn">assertEqual</span>(response.data[<span class="str">'title'</span>], <span class="str">'Test Post'</span>)</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- ===== AJAX SECTION ===== -->
+<div class="sec-header" style="padding-top:60px;"><span class="sec-badge htag-aj">AJAX</span><h2 class="sec-title">AJAX — Complete</h2></div>
+<div class="level-row"><span class="level-badge lb-basic">Beginner</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="70">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q70</span>
+    <span class="qa-q">What is AJAX and how does it work?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">AJAX (Asynchronous JavaScript and XML) allows web pages to send and receive data from a server <strong>without reloading the entire page</strong>. JavaScript makes an HTTP request in the background, receives a response, and updates only the relevant part of the DOM.</p>
+    <ul class="ans-list">
+      <li><strong>Asynchronous</strong> — doesn't block page interaction while waiting for response</li>
+      <li><strong>JavaScript</strong> — sends the request and handles the response</li>
+      <li><strong>XML/JSON</strong> — data format (today almost always JSON)</li>
+    </ul>
+    <div class="ans-tip tip-green"><strong>Real examples:</strong> Google autocomplete, infinite scroll, live form validation, chat messages appearing without refresh.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="71">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q71</span>
+    <span class="qa-q">What is <code>XMLHttpRequest</code> and how do you use it?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">XMLHttpRequest (XHR) is the original browser API for making HTTP requests asynchronously. It was introduced in 2000 and was the foundation of AJAX before <code>fetch()</code> was added.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">xhr.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">const</span> xhr = <span class="kw">new</span> XMLHttpRequest();
+xhr.<span class="fn">open</span>(<span class="str">'GET'</span>, <span class="str">'https://api.example.com/users/1'</span>);
+
+xhr.<span class="prop">onload</span> = <span class="kw">function</span>() {
+    <span class="kw">if</span> (xhr.<span class="prop">status</span> === <span class="num">200</span>) {
+        <span class="kw">const</span> data = JSON.<span class="fn">parse</span>(xhr.<span class="prop">responseText</span>);
+        console.<span class="fn">log</span>(data.name);
+    }
+};
+xhr.<span class="prop">onerror</span> = <span class="kw">function</span>() { console.<span class="fn">log</span>(<span class="str">'Network error'</span>); };
+xhr.<span class="fn">send</span>();
+
+<span class="cm">// POST with body</span>
+xhr.<span class="fn">open</span>(<span class="str">'POST'</span>, <span class="str">'/api/posts/'</span>);
+xhr.<span class="fn">setRequestHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'application/json'</span>);
+xhr.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({title: <span class="str">'Hello'</span>}));</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="72">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q72</span>
+    <span class="qa-q">What is the <code>fetch()</code> API? How does it differ from XHR?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>fetch()</code> is the modern, Promise-based API for making HTTP requests. It replaced XHR in modern codebases.</p>
+    <table class="ctbl"><tr><th>Feature</th><th>XHR</th><th>fetch()</th></tr><tr><td>Syntax</td><td>Verbose, callback-based</td><td>Clean, Promise-based</td></tr><tr><td>Error on 4xx/5xx</td><td>Yes (checks status)</td><td>No — only network errors reject</td></tr><tr><td>JSON parsing</td><td>Manual JSON.parse()</td><td>response.json() built-in</td></tr><tr><td>Cancellation</td><td>xhr.abort()</td><td>AbortController</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">fetch_example.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="fn">fetch</span>(<span class="str">'/api/posts/'</span>)
+  .<span class="fn">then</span>(res => {
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> Error(<span class="str">`HTTP ${res.status}`</span>);
+    <span class="kw">return</span> res.<span class="fn">json</span>();
+  })
+  .<span class="fn">then</span>(data => console.<span class="fn">log</span>(data))
+  .<span class="fn">catch</span>(err => console.<span class="fn">log</span>(err.message));</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="73">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q73</span>
+    <span class="qa-q">What is CORS and why does it block AJAX requests?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">CORS (Cross-Origin Resource Sharing) is a browser security mechanism that <strong>blocks JavaScript from making requests to a different origin</strong> (domain, protocol, or port) unless the server explicitly allows it.</p>
+    <ul class="ans-list">
+      <li>Same origin: <code>http://mysite.com</code> → <code>http://mysite.com/api</code> ✓ (allowed)</li>
+      <li>Cross origin: <code>http://mysite.com</code> → <code>http://api.other.com</code> ✗ (blocked)</li>
+    </ul>
+    <p class="ans-text">The server must respond with <code>Access-Control-Allow-Origin: http://mysite.com</code> (or *) in the response headers. In Django: install and configure <code>django-cors-headers</code>.</p>
+    <div class="ans-tip tip-amber"><strong>Important:</strong> CORS is a browser feature only. Postman, curl, and Python requests never get CORS errors. This is why your API works in Postman but fails in the browser.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="74">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q74</span>
+    <span class="qa-q">What is async/await? How does it work with fetch?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>async/await</code> is syntactic sugar over Promises. <code>async</code> makes a function return a Promise; <code>await</code> pauses execution until the Promise resolves — making async code read like synchronous code.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">async_await.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">async function</span> <span class="fn">fetchUser</span>(id) {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/users/${id}/`</span>);
+        <span class="kw">if</span> (!response.ok) <span class="kw">throw new</span> Error(<span class="str">`Error: ${response.status}`</span>);
+        <span class="kw">const</span> user = <span class="kw">await</span> response.<span class="fn">json</span>();
+        console.<span class="fn">log</span>(user.name);
+        <span class="kw">return</span> user;
+    } <span class="kw">catch</span> (error) {
+        console.<span class="fn">error</span>(<span class="str">'Failed:'</span>, error.message);
+    }
+}
+<span class="fn">fetchUser</span>(<span class="num">1</span>);</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="75">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q75</span>
+    <span class="qa-q">Why does fetch() NOT throw errors for 404 or 500 responses?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">This is one of the most common interview gotchas. <code>fetch()</code> only rejects its Promise when there is a <strong>network failure</strong> (no internet, DNS error, request blocked). A 404 or 500 response from the server is still a "successful" HTTP communication, so fetch resolves.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">error_handling.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="cm">// WRONG — 404 will NOT go to .catch()</span>
+<span class="fn">fetch</span>(<span class="str">'/api/post/99999/'</span>)
+  .<span class="fn">then</span>(res => res.<span class="fn">json</span>())  <span class="cm">// still runs even for 404!</span>
+  .<span class="fn">catch</span>(err => console.<span class="fn">log</span>(err)) <span class="cm">// only fires for network errors</span>
+
+<span class="cm">// CORRECT — always check response.ok</span>
+<span class="fn">fetch</span>(<span class="str">'/api/post/99999/'</span>)
+  .<span class="fn">then</span>(res => {
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> Error(<span class="str">`HTTP ${res.status}`</span>);
+    <span class="kw">return</span> res.<span class="fn">json</span>();
+  })
+  .<span class="fn">catch</span>(err => console.<span class="fn">log</span>(err)) <span class="cm">// catches both HTTP + network errors</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj" data-level="basic" data-id="76">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q76</span>
+    <span class="qa-q">How do you send a POST request with JSON body using fetch?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">post_request.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">async function</span> <span class="fn">createPost</span>(data) {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/posts/'</span>, {
+        method: <span class="str">'POST'</span>,
+        headers: {
+            <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+            <span class="str">'Authorization'</span>: <span class="str">`Bearer ${localStorage.<span class="fn">getItem</span>('token')}`</span>
+        },
+        body: JSON.<span class="fn">stringify</span>(data)
+    });
+
+    <span class="kw">if</span> (!response.ok) {
+        <span class="kw">const</span> errors = <span class="kw">await</span> response.<span class="fn">json</span>();
+        <span class="kw">throw new</span> Error(JSON.<span class="fn">stringify</span>(errors));
+    }
+
+    <span class="kw">return</span> response.<span class="fn">json</span>();
+}
+
+<span class="fn">createPost</span>({title: <span class="str">'Hello'</span>, body: <span class="str">'Content'</span>})
+  .<span class="fn">then</span>(post => console.<span class="fn">log</span>(<span class="str">'Created:'</span>, post.id));</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- AJAX INTERMEDIATE -->
+<div class="level-row" style="margin-top:40px"><span class="level-badge lb-mid">Intermediate</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="aj-mid" data-level="mid" data-id="83">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q83</span>
+    <span class="qa-q">What is <code>AbortController</code> and why is it needed?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>AbortController</code> cancels an in-flight fetch request. Essential for search boxes where you need to cancel the previous request before making a new one — preventing race conditions where older requests return stale data after newer ones.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">abort_controller.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">let</span> controller = <span class="kw">null</span>;
+
+<span class="kw">async function</span> <span class="fn">search</span>(query) {
+    <span class="kw">if</span> (controller) controller.<span class="fn">abort</span>(); <span class="cm">// cancel previous</span>
+    controller = <span class="kw">new</span> AbortController();
+
+    <span class="kw">try</span> {
+        <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/search/?q=${query}`</span>,
+            { signal: controller.<span class="prop">signal</span> }
+        );
+        <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+        <span class="fn">renderResults</span>(data);
+    } <span class="kw">catch</span> (e) {
+        <span class="kw">if</span> (e.<span class="prop">name</span> === <span class="str">'AbortError'</span>) <span class="kw">return</span>; <span class="cm">// request was cancelled</span>
+        console.<span class="fn">error</span>(e);
+    }
+}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-mid" data-level="mid" data-id="84">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q84</span>
+    <span class="qa-q">What is debouncing and how do you implement it for AJAX search?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Debouncing delays execution until a user stops performing an action. For search, instead of making an AJAX call on every keystroke, you wait until the user stops typing for N milliseconds.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">debounce.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">function</span> <span class="fn">debounce</span>(fn, delay = <span class="num">300</span>) {
+    <span class="kw">let</span> timer;
+    <span class="kw">return function</span>(...args) {
+        <span class="fn">clearTimeout</span>(timer);
+        timer = <span class="fn">setTimeout</span>(() => fn(...args), delay);
+    };
+}
+
+<span class="kw">const</span> debouncedSearch = <span class="fn">debounce</span>(searchAPI, <span class="num">300</span>);
+searchInput.<span class="fn">addEventListener</span>(<span class="str">'input'</span>, e => <span class="fn">debouncedSearch</span>(e.target.value));
+
+<span class="cm">// Typing "python" fires only 1 request, 300ms after last keystroke</span>
+<span class="cm">// Without debounce: 6 requests (p, py, pyt, pyth, pytho, python)</span></pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-mid" data-level="mid" data-id="85">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q85</span>
+    <span class="qa-q">How do you implement optimistic UI updates with AJAX?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Optimistic UI updates the interface <strong>immediately before the server responds</strong>, assuming success. If the API fails, you roll back. This makes the UI feel instant.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">optimistic_ui.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">async function</span> <span class="fn">likePost</span>(postId) {
+    <span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">`like-${postId}`</span>);
+    <span class="kw">const</span> prevCount = btn.textContent;
+
+    <span class="cm">// Optimistic: update UI immediately</span>
+    btn.textContent = parseInt(prevCount) + <span class="num">1</span> + <span class="str">' ♥'</span>;
+    btn.disabled = <span class="kw">true</span>;
+
+    <span class="kw">try</span> {
+        <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/posts/${postId}/like/`</span>, { method: <span class="str">'POST'</span> });
+        btn.disabled = <span class="kw">false</span>;
+    } <span class="kw">catch</span> (err) {
+        <span class="cm">// Rollback on failure</span>
+        btn.textContent = prevCount;
+        btn.disabled = <span class="kw">false</span>;
+        <span class="fn">showError</span>(<span class="str">'Could not like post. Try again.'</span>);
+    }
+}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-mid" data-level="mid" data-id="86">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q86</span>
+    <span class="qa-q">What is <code>Promise.all()</code> and when do you use it in AJAX?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text"><code>Promise.all()</code> runs multiple promises simultaneously and waits for all of them to complete. Use it when requests are independent of each other — much faster than sequential awaits.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">promise_all.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">async function</span> <span class="fn">loadDashboard</span>() {
+    <span class="cm">// Sequential: 300ms + 200ms + 150ms = 650ms total</span>
+    <span class="cm">// const users = await fetch('/api/users/');</span>
+    <span class="cm">// const posts = await fetch('/api/posts/');</span>
+    <span class="cm">// const stats = await fetch('/api/stats/');</span>
+
+    <span class="cm">// Parallel: max(300ms, 200ms, 150ms) = 300ms total</span>
+    <span class="kw">const</span> [usersRes, postsRes, statsRes] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+        <span class="fn">fetch</span>(<span class="str">'/api/users/'</span>),
+        <span class="fn">fetch</span>(<span class="str">'/api/posts/'</span>),
+        <span class="fn">fetch</span>(<span class="str">'/api/stats/'</span>)
+    ]);
+    <span class="kw">const</span> [users, posts, stats] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+        usersRes.<span class="fn">json</span>(), postsRes.<span class="fn">json</span>(), statsRes.<span class="fn">json</span>()
+    ]);
+}</pre></div>
+    <div class="ans-tip tip-amber"><strong>Note:</strong> Promise.all() rejects immediately if ANY promise fails. Use Promise.allSettled() if you want all results even if some fail.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-mid" data-level="mid" data-id="87">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q87</span>
+    <span class="qa-q">How do you handle AJAX with JWT authentication?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">jwt_ajax.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">async function</span> <span class="fn">apiFetch</span>(url, options = {}) {
+    <span class="kw">const</span> token = localStorage.<span class="fn">getItem</span>(<span class="str">'access_token'</span>);
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url, {
+        ...options,
+        headers: {
+            <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+            <span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span>,
+            ...options.headers
+        }
+    });
+
+    <span class="cm">// Access token expired — try to refresh</span>
+    <span class="kw">if</span> (res.status === <span class="num">401</span>) {
+        <span class="kw">const</span> refreshRes = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/token/refresh/'</span>, {
+            method: <span class="str">'POST'</span>,
+            headers: {<span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>},
+            body: JSON.<span class="fn">stringify</span>({refresh: localStorage.<span class="fn">getItem</span>(<span class="str">'refresh_token'</span>)})
+        });
+        <span class="kw">if</span> (refreshRes.ok) {
+            <span class="kw">const</span> {access} = <span class="kw">await</span> refreshRes.<span class="fn">json</span>();
+            localStorage.<span class="fn">setItem</span>(<span class="str">'access_token'</span>, access);
+            <span class="kw">return</span> <span class="fn">apiFetch</span>(url, options); <span class="cm">// retry original request</span>
+        }
+        window.location = <span class="str">'/login'</span>;
+    }
+    <span class="kw">return</span> res;
+}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<!-- AJAX ADVANCED -->
+<div class="level-row" style="margin-top:40px"><span class="level-badge lb-adv">Advanced</span><div class="level-line"></div></div>
+
+<div class="qa-card" data-topic="aj-adv" data-level="adv" data-id="95">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q95</span>
+    <span class="qa-q">What is the difference between throttling and debouncing?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th></th><th>Debounce</th><th>Throttle</th></tr><tr><td>When fires</td><td>After user STOPS for N ms</td><td>At most once per N ms while active</td></tr><tr><td>Search input</td><td>✓ Best choice — fires once user stops typing</td><td>Can work but may fire mid-word</td></tr><tr><td>Scroll events</td><td>Fires only when scrolling stops</td><td>✓ Best choice — fires steadily while scrolling</td></tr><tr><td>Window resize</td><td>✓ Fires only when done resizing</td><td>Less ideal</td></tr></table>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">throttle.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">function</span> <span class="fn">throttle</span>(fn, limit) {
+    <span class="kw">let</span> lastFired = <span class="num">0</span>;
+    <span class="kw">return function</span>(...args) {
+        <span class="kw">const</span> now = Date.<span class="fn">now</span>();
+        <span class="kw">if</span> (now - lastFired >= limit) {
+            lastFired = now;
+            fn(...args);
+        }
+    };
+}
+window.<span class="fn">addEventListener</span>(<span class="str">'scroll'</span>, <span class="fn">throttle</span>(loadMore, <span class="num">500</span>));</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-adv" data-level="adv" data-id="96">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q96</span>
+    <span class="qa-q">How do you implement AJAX with retry logic and exponential backoff?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">retry_fetch.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">async function</span> <span class="fn">fetchWithRetry</span>(url, options = {}, maxRetries = <span class="num">3</span>) {
+    <span class="kw">for</span> (<span class="kw">let</span> attempt = <span class="num">0</span>; attempt < maxRetries; attempt++) {
+        <span class="kw">try</span> {
+            <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url, options);
+            <span class="kw">if</span> (!res.ok && res.status >= <span class="num">500</span>) {
+                <span class="kw">throw new</span> Error(<span class="str">`Server error: ${res.status}`</span>);
+            }
+            <span class="kw">return</span> res;
+        } <span class="kw">catch</span> (err) {
+            <span class="kw">if</span> (attempt === maxRetries - <span class="num">1</span>) <span class="kw">throw</span> err;
+            <span class="kw">const</span> delay = <span class="num">1000</span> * Math.<span class="fn">pow</span>(<span class="num">2</span>, attempt); <span class="cm">// 1s, 2s, 4s</span>
+            console.<span class="fn">log</span>(<span class="str">`Attempt ${attempt+1} failed. Retrying in ${delay}ms`</span>);
+            <span class="kw">await new</span> Promise(r => <span class="fn">setTimeout</span>(r, delay));
+        }
+    }
+}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-adv" data-level="adv" data-id="97">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q97</span>
+    <span class="qa-q">What is the difference between <code>Promise.all()</code>, <code>Promise.allSettled()</code>, <code>Promise.race()</code>, and <code>Promise.any()</code>?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <table class="ctbl"><tr><th>Method</th><th>Resolves when</th><th>Rejects when</th><th>Use case</th></tr><tr><td>Promise.all()</td><td>ALL succeed</td><td>ANY fails</td><td>Need all data — dashboard load</td></tr><tr><td>Promise.allSettled()</td><td>ALL settle (success or fail)</td><td>Never</td><td>Want all results regardless of failures</td></tr><tr><td>Promise.race()</td><td>FIRST settles (win or lose)</td><td>FIRST rejects</td><td>Timeout: race fetch vs timer</td></tr><tr><td>Promise.any()</td><td>FIRST succeeds</td><td>ALL fail</td><td>Try multiple servers, use fastest</td></tr></table>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-adv" data-level="adv" data-id="98">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q98</span>
+    <span class="qa-q">How would you implement infinite scroll with AJAX?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">infinite_scroll.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">let</span> nextUrl = <span class="str">'/api/posts/?page=1'</span>;
+<span class="kw">let</span> isLoading = <span class="kw">false</span>;
+
+<span class="kw">async function</span> <span class="fn">loadMore</span>() {
+    <span class="kw">if</span> (!nextUrl || isLoading) <span class="kw">return</span>;
+    isLoading = <span class="kw">true</span>;
+
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(nextUrl, {
+        headers: { <span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span> }
+    });
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+    data.results.<span class="fn">forEach</span>(post => <span class="fn">appendPostToDOM</span>(post));
+    nextUrl = data.next; <span class="cm">// null when no more pages</span>
+    isLoading = <span class="kw">false</span>;
+}
+
+<span class="cm">// Detect when user nears bottom</span>
+<span class="kw">const</span> observer = <span class="kw">new</span> IntersectionObserver(entries => {
+    <span class="kw">if</span> (entries[<span class="num">0</span>].isIntersecting) <span class="fn">loadMore</span>();
+});
+observer.<span class="fn">observe</span>(document.<span class="fn">getElementById</span>(<span class="str">'load-sentinel'</span>));</pre></div>
+    <div class="ans-tip tip-blue"><strong>Pro tip:</strong> Use IntersectionObserver instead of scroll event listeners — it's more performant and simpler. Place a sentinel div at the bottom of the list and observe it.</div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-adv" data-level="adv" data-id="99">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q99</span>
+    <span class="qa-q">How do you upload files via AJAX with progress tracking?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">Use XHR for upload progress (fetch doesn't support progress tracking yet in most browsers). Use FormData to send the file.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">file_upload_progress.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">function</span> <span class="fn">uploadWithProgress</span>(file, onProgress) {
+    <span class="kw">return new</span> Promise((resolve, reject) => {
+        <span class="kw">const</span> xhr = <span class="kw">new</span> XMLHttpRequest();
+        <span class="kw">const</span> formData = <span class="kw">new</span> FormData();
+        formData.<span class="fn">append</span>(<span class="str">'file'</span>, file);
+
+        xhr.upload.<span class="prop">onprogress</span> = e => {
+            <span class="kw">if</span> (e.lengthComputable) {
+                <span class="fn">onProgress</span>(Math.<span class="fn">round</span>(e.loaded / e.total * <span class="num">100</span>));
+            }
+        };
+
+        xhr.<span class="prop">onload</span>  = () => xhr.status < <span class="num">400</span> ? resolve(JSON.<span class="fn">parse</span>(xhr.responseText)) : reject(xhr.status);
+        xhr.<span class="prop">onerror</span> = () => reject(<span class="str">'Network error'</span>);
+
+        xhr.<span class="fn">open</span>(<span class="str">'POST'</span>, <span class="str">'/api/uploads/'</span>);
+        xhr.<span class="fn">setRequestHeader</span>(<span class="str">'Authorization'</span>, <span class="str">`Bearer ${token}`</span>);
+        xhr.<span class="fn">send</span>(formData);
+    });
+}</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+<div class="qa-card" data-topic="aj-adv" data-level="adv" data-id="100">
+  <div class="qa-header" onclick="toggle(this.parentElement)">
+    <span class="qa-num">Q100</span>
+    <span class="qa-q">What is a request interceptor pattern and how do you implement one?</span>
+    <span class="qa-tag tag-aj">AJAX</span>
+    <button class="qa-bm" onclick="bookmark(event,this)">☆</button>
+    <span class="qa-arrow">▼</span>
+  </div>
+  <div class="qa-body">
+    <p class="ans-text">An interceptor is a wrapper that runs code before every request (add auth headers, logging) or after every response (error handling, token refresh). This is how Axios interceptors work internally.</p>
+    <div class="code-snip"><div class="cs-bar"><span class="cs-fname">interceptor_pattern.js</span><button class="cs-copy" onclick="cp(this)">copy</button></div><pre><span class="kw">const</span> http = {
+    <span class="fn">request</span>: <span class="kw">async</span> (url, options = {}) => {
+        <span class="cm">// REQUEST interceptor — runs before every call</span>
+        <span class="kw">const</span> token = <span class="fn">getToken</span>();
+        <span class="kw">const</span> config = {
+            ...options,
+            headers: {
+                <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+                ...(token ? {<span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span>} : {}),
+                ...options.headers
+            }
+        };
+        <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(url, config);
+
+        <span class="cm">// RESPONSE interceptor — runs after every response</span>
+        <span class="kw">if</span> (response.status === <span class="num">401</span>) <span class="kw">await</span> <span class="fn">handleTokenRefresh</span>();
+        <span class="kw">if</span> (response.status === <span class="num">403</span>) <span class="fn">redirectToForbidden</span>();
+        <span class="kw">if</span> (response.status >= <span class="num">500</span>) <span class="fn">logServerError</span>(url, response.status);
+
+        <span class="kw">return</span> response;
+    }
+};
+
+<span class="kw">const</span> data = <span class="kw">await</span> http.<span class="fn">request</span>(<span class="str">'/api/posts/'</span>).<span class="fn">then</span>(r => r.<span class="fn">json</span>());</pre></div>
+    <div class="conf-row"><span class="conf-label">Confidence:</span><button class="conf-btn" onclick="rate(this,'know')">✓ I know this</button><button class="conf-btn" onclick="rate(this,'review')">~ Need review</button><button class="conf-btn" onclick="rate(this,'skip')">✗ Skip</button></div>
+  </div>
+</div>
+
+</div>
+<!-- END ALL SECTION -->
+
+<!-- BOOKMARKS SECTION -->
+<div class="section" id="sec-bookmarks">
+  <div class="sec-header"><h2 class="sec-title">Bookmarked Questions</h2><p class="sec-desc">Questions you marked for quick review.</p></div>
+  <div id="bookmark-list"><p style="color:var(--muted);padding:20px 0;">No bookmarks yet. Click ☆ on any question to bookmark it.</p></div>
+</div>
+
+<!-- NEEDS REVIEW SECTION -->
+<div class="section" id="sec-needs-review">
+  <div class="sec-header"><h2 class="sec-title">Needs Review</h2><p class="sec-desc">Questions you marked as needing more study.</p></div>
+  <div id="review-list"><p style="color:var(--muted);padding:20px 0;">No questions marked for review yet.</p></div>
+</div>
+
+</main>
+</div>
+
+<script>
+let bookmarks = new Set();
+let reviewItems = new Set();
+let knowItems = new Set();
+let isPracticeMode = false;
+let currentTab = 'all';
+let currentLevel = 'all';
+let answered = new Set();
+
+const totalQ = document.querySelectorAll('.qa-card').length;
+document.getElementById('total-q').textContent = totalQ;
+
+function toggle(card) {
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    answered.add(card.dataset.id);
+    updateProgress();
+  }
+}
+
+function bookmark(e, btn) {
+  e.stopPropagation();
+  const card = btn.closest('.qa-card');
+  const id = card.dataset.id;
+  if (bookmarks.has(id)) {
+    bookmarks.delete(id);
+    btn.textContent = '☆';
+    btn.classList.remove('bookmarked');
+  } else {
+    bookmarks.add(id);
+    btn.textContent = '★';
+    btn.classList.add('bookmarked');
+  }
+  document.getElementById('cnt-bm').textContent = bookmarks.size;
+  renderBookmarks();
+}
+
+function renderBookmarks() {
+  const list = document.getElementById('bookmark-list');
+  if (bookmarks.size === 0) {
+    list.innerHTML = '<p style="color:var(--muted);padding:20px 0;">No bookmarks yet.</p>';
+    return;
+  }
+  const cards = [];
+  bookmarks.forEach(id => {
+    const card = document.querySelector(`[data-id="${id}"]`);
+    if (card) cards.push(card.cloneNode(true));
+  });
+  list.innerHTML = '';
+  cards.forEach(c => {
+    c.querySelectorAll('.qa-header').forEach(h => h.onclick = () => toggle(c));
+    list.appendChild(c);
+  });
+}
+
+function rate(btn, type) {
+  const card = btn.closest('.qa-card');
+  const id = card.dataset.id;
+  const row = btn.closest('.conf-row');
+  row.querySelectorAll('.conf-btn').forEach(b => { b.classList.remove('conf-know','conf-review','conf-skip'); });
+
+  if (type === 'know') {
+    btn.classList.add('conf-know');
+    knowItems.add(id); reviewItems.delete(id);
+  } else if (type === 'review') {
+    btn.classList.add('conf-review');
+    reviewItems.add(id); knowItems.delete(id);
+  } else {
+    btn.classList.add('conf-skip');
+    knowItems.delete(id); reviewItems.delete(id);
+  }
+  answered.add(id);
+  document.getElementById('know-count').textContent = knowItems.size;
+  document.getElementById('review-count').textContent = reviewItems.size;
+  document.getElementById('cnt-rev').textContent = reviewItems.size;
+  updateProgress();
+  renderReviews();
+}
+
+function renderReviews() {
+  const list = document.getElementById('review-list');
+  if (reviewItems.size === 0) {
+    list.innerHTML = '<p style="color:var(--muted);padding:20px 0;">No questions marked for review yet.</p>';
+    return;
+  }
+  const cards = [];
+  reviewItems.forEach(id => {
+    const card = document.querySelector(`#sec-all [data-id="${id}"]`);
+    if (card) cards.push(card.cloneNode(true));
+  });
+  list.innerHTML = '';
+  cards.forEach(c => {
+    c.querySelectorAll('.qa-header').forEach(h => h.onclick = () => toggle(c));
+    list.appendChild(c);
+  });
+}
+
+function updateProgress() {
+  const pct = Math.round(answered.size / totalQ * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('answered-count').textContent = answered.size;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sn-item').forEach(n => n.classList.remove('active'));
+
+  if (tab === 'bookmarks') {
+    document.getElementById('sec-bookmarks').classList.add('active');
+    renderBookmarks();
+  } else if (tab === 'needs-review') {
+    document.getElementById('sec-needs-review').classList.add('active');
+    renderReviews();
+  } else {
+    document.getElementById('sec-all').classList.add('active');
+    filterCards(tab, currentLevel);
+  }
+
+  const idx = ['all','dj','dj-mid','dj-adv','drf','drf-mid','drf-adv','aj','aj-mid','aj-adv','bookmarks','needs-review'].indexOf(tab);
+  if (idx >= 0) document.querySelectorAll('.sn-item')[idx]?.classList.add('active');
+
+  document.getElementById('mainEl').scrollTo({top:0, behavior:'smooth'});
+}
+
+function filterLevel(level, btn) {
+  currentLevel = level;
+  document.querySelectorAll('.filt').forEach(f => f.classList.remove('filt-active'));
+  btn.classList.add('filt-active');
+  filterCards(currentTab, level);
+}
+
+function filterCards(tab, level) {
+  const cards = document.querySelectorAll('#sec-all .qa-card');
+  cards.forEach(card => {
+    const topicMatch = tab === 'all' || card.dataset.topic === tab ||
+      (tab === 'dj' && card.dataset.topic === 'dj') ||
+      (tab === 'dj-mid' && card.dataset.topic === 'dj-mid') ||
+      (tab === 'dj-adv' && card.dataset.topic === 'dj-adv') ||
+      (tab === 'drf' && card.dataset.topic === 'drf') ||
+      (tab === 'drf-mid' && card.dataset.topic === 'drf-mid') ||
+      (tab === 'drf-adv' && card.dataset.topic === 'drf-adv') ||
+      (tab === 'aj' && card.dataset.topic === 'aj') ||
+      (tab === 'aj-mid' && card.dataset.topic === 'aj-mid') ||
+      (tab === 'aj-adv' && card.dataset.topic === 'aj-adv');
+    const levelMatch = level === 'all' || card.dataset.level === level;
+    card.style.display = (topicMatch && levelMatch) ? '' : 'none';
+  });
+}
+
+function searchQs(q) {
+  const query = q.toLowerCase().trim();
+  const cards = document.querySelectorAll('#sec-all .qa-card');
+  let count = 0;
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const match = !query || text.includes(query);
+    card.style.display = match ? '' : 'none';
+    if (match) count++;
+  });
+  document.getElementById('resultCount').textContent = query ? `${count} results` : '';
+  if (query) document.getElementById('sec-all').classList.add('active');
+}
+
+function expandAll() {
+  document.querySelectorAll('.qa-card:not([style*="display: none"])').forEach(c => {
+    c.classList.add('open');
+    answered.add(c.dataset.id);
+  });
+  updateProgress();
+}
+
+function collapseAll() {
+  document.querySelectorAll('.qa-card').forEach(c => c.classList.remove('open'));
+}
+
+function togglePractice() {
+  isPracticeMode = !isPracticeMode;
+  document.body.classList.toggle('practice-mode', isPracticeMode);
+  document.querySelectorAll('.qa-body').forEach(b => {
+    b.classList.toggle('practice-hidden', isPracticeMode && !b.closest('.qa-card').classList.contains('open'));
+  });
+  alert(isPracticeMode ? '🎯 Practice mode ON — answers are hidden. Click a question to reveal it.' : '📖 Practice mode OFF');
+}
+
+function cp(btn) {
+  const pre = btn.closest('.code-snip').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

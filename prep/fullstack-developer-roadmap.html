@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full-Stack Developer Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f0f13;
+  --paper: #faf9f6;
+  --paper2: #f3f1ec;
+  --paper3: #ebe8e0;
+  --line: rgba(0,0,0,0.1);
+  --line2: rgba(0,0,0,0.06);
+  --muted: #6b6860;
+  --muted2: #9c9890;
+  --accent-py: #3b82f6;
+  --accent-dj: #0d9e6e;
+  --accent-db: #e67e22;
+  --accent-aj: #8b5cf6;
+  --accent-re: #e11d48;
+  --accent-de: #0ea5e9;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', 'Courier New', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--paper2); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+/* ===== LAYOUT ===== */
+.shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto;
+  background: var(--ink);
+  color: #fff;
+  display: flex; flex-direction: column;
+}
+
+.sb-brand {
+  padding: 32px 28px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sb-brand .eyebrow {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 10px;
+}
+.sb-brand h1 {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.15;
+  color: #fff;
+  font-weight: 400;
+}
+.sb-brand h1 em { font-style: italic; color: rgba(255,255,255,0.55); }
+
+.sb-progress-wrap {
+  padding: 18px 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sb-progress-label {
+  font-size: 10px; font-family: var(--mono);
+  color: rgba(255,255,255,0.3);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; justify-content: space-between;
+}
+.sb-progress-track {
+  height: 2px; background: rgba(255,255,255,0.1); border-radius: 1px; overflow: hidden;
+}
+.sb-progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent-py), var(--accent-re));
+  border-radius: 1px;
+  transition: width .5s ease;
+}
+
+.sb-nav { padding: 12px 0; flex: 1; overflow-y: auto; }
+.sb-section-label {
+  padding: 14px 28px 6px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.22);
+}
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 28px;
+  cursor: pointer;
+  transition: background .15s;
+  border-left: 2px solid transparent;
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+}
+.sb-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+.sb-item.active { color: #fff; border-left-color: #fff; background: rgba(255,255,255,0.06); }
+.sb-item.done { color: rgba(255,255,255,0.55); }
+.sb-dot {
+  width: 6px; height: 6px; border-radius: 50%; min-width: 6px;
+  background: rgba(255,255,255,0.15);
+  transition: background .2s;
+}
+.sb-item.active .sb-dot { background: #fff; }
+.sb-item.done .sb-dot { background: #4ade80; }
+.sb-check { font-size: 10px; color: #4ade80; display: none; }
+.sb-item.done .sb-check { display: block; }
+.sb-item.done .sb-dot { display: none; }
+
+/* ===== MAIN ===== */
+.main { overflow-y: auto; height: 100vh; background: var(--paper); }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 72px 72px 56px;
+  border-bottom: 1px solid var(--line2);
+  background: var(--paper);
+  position: relative;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+  align-items: start; max-width: 900px;
+}
+.hero-left {}
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted2); margin-bottom: 20px;
+}
+.hero-title {
+  font-family: var(--serif); font-size: clamp(38px,4vw,58px);
+  line-height: 1.05; font-weight: 400; margin-bottom: 20px;
+}
+.hero-title em { font-style: italic; color: var(--muted); }
+.hero-desc { font-size: 15px; color: var(--muted); line-height: 1.8; max-width: 420px; }
+
+.stack-pills {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px;
+}
+.stack-pill {
+  padding: 5px 14px; border-radius: 2px;
+  font-family: var(--mono); font-size: 11px;
+  font-weight: 500; letter-spacing: .03em;
+  border: 1px solid; cursor: pointer;
+  transition: all .15s;
+}
+.sp-py { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.3); color: var(--accent-py); }
+.sp-dj { background: rgba(13,158,110,.08); border-color: rgba(13,158,110,.3); color: var(--accent-dj); }
+.sp-db { background: rgba(230,126,34,.08); border-color: rgba(230,126,34,.3); color: var(--accent-db); }
+.sp-aj { background: rgba(139,92,246,.08); border-color: rgba(139,92,246,.3); color: var(--accent-aj); }
+.sp-re { background: rgba(225,29,72,.08); border-color: rgba(225,29,72,.3); color: var(--accent-re); }
+.sp-de { background: rgba(14,165,233,.08); border-color: rgba(14,165,233,.3); color: var(--accent-de); }
+
+.hero-right {}
+.overview-box {
+  background: var(--ink); color: #fff;
+  border-radius: 4px; padding: 28px;
+}
+.overview-box h3 {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); margin-bottom: 20px;
+}
+.ov-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px;
+}
+.ov-row:last-child { border-bottom: none; }
+.ov-label { color: rgba(255,255,255,0.5); }
+.ov-val { font-family: var(--mono); font-size: 12px; color: #fff; }
+.ov-val.green { color: #4ade80; }
+
+/* ===== CHAPTERS ===== */
+.chapter { display: none; padding: 64px 72px; border-bottom: 1px solid var(--line2); }
+.chapter.visible { display: block; animation: slideIn .3s ease; }
+@keyframes slideIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:none; } }
+
+.ch-header { margin-bottom: 48px; }
+.ch-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.ch-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted2); letter-spacing: .1em;
+}
+.ch-badge {
+  font-family: var(--mono); font-size: 9px;
+  padding: 3px 10px; border-radius: 2px;
+  letter-spacing: .08em; text-transform: uppercase; border: 1px solid;
+}
+.badge-beginner { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.3); color: #16a34a; }
+.badge-intermediate { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.3); color: #b45309; }
+.badge-advanced { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.3); color: #b91c1c; }
+.badge-expert { background: rgba(139,92,246,.08); border-color: rgba(139,92,246,.3); color: #6d28d9; }
+
+.ch-title {
+  font-family: var(--serif); font-size: 40px;
+  font-weight: 400; line-height: 1.1; margin-bottom: 12px;
+}
+.ch-desc { font-size: 15px; color: var(--muted); max-width: 640px; line-height: 1.8; }
+
+/* ===== SECTION HEADS ===== */
+.sh {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--muted2); margin: 40px 0 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.sh::after { content: ''; flex: 1; height: 1px; background: var(--line2); }
+
+/* ===== TOPIC GRID ===== */
+.topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1px; background: var(--line2); border: 1px solid var(--line2); margin: 16px 0; }
+.topic-card {
+  background: var(--paper); padding: 20px 22px;
+  transition: background .15s;
+}
+.topic-card:hover { background: var(--paper2); }
+.tc-tag {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: .12em; text-transform: uppercase;
+  margin-bottom: 8px; opacity: .6;
+}
+.tc-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; line-height: 1.3; }
+.tc-body { font-size: 12px; color: var(--muted); line-height: 1.65; }
+.tc-secret {
+  margin-top: 10px; padding: 8px 10px;
+  background: var(--paper3);
+  border-left: 2px solid var(--ink);
+  font-size: 11px; color: var(--ink);
+  line-height: 1.6;
+}
+.tc-secret::before { content: 'Secret: '; font-family: var(--mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; opacity: .5; }
+
+/* ===== CODE BLOCKS ===== */
+.code-wrap {
+  background: var(--ink); border-radius: 4px;
+  overflow: hidden; margin: 16px 0;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.code-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 18px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.code-file { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.3); }
+.code-copy {
+  font-family: var(--mono); font-size: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4); padding: 3px 10px;
+  border-radius: 3px; cursor: pointer; transition: all .15s;
+}
+.code-copy:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+pre {
+  padding: 20px 18px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.8; overflow-x: auto;
+  color: rgba(255,255,255,0.8);
+  tab-size: 4;
+}
+pre .kw { color: #c792ea; }
+pre .fn { color: #82aaff; }
+pre .str { color: #c3e88d; }
+pre .cm { color: #546e7a; font-style: italic; }
+pre .num { color: #f78c6c; }
+pre .cls { color: #ffcb6b; }
+pre .dec { color: #89ddff; }
+pre .prop { color: #f07178; }
+
+/* ===== CALLOUTS ===== */
+.callout {
+  padding: 14px 18px; margin: 14px 0;
+  font-size: 13px; line-height: 1.7;
+  display: flex; gap: 12px; align-items: flex-start;
+  border-radius: 3px;
+}
+.c-icon { min-width: 16px; font-size: 13px; }
+.c-tip { background: rgba(59,130,246,.06); border-left: 3px solid rgba(59,130,246,.4); color: #1e40af; }
+.c-warn { background: rgba(245,158,11,.06); border-left: 3px solid rgba(245,158,11,.4); color: #92400e; }
+.c-secret { background: rgba(0,0,0,.04); border-left: 3px solid var(--ink); color: var(--ink); }
+.c-important { background: rgba(225,29,72,.06); border-left: 3px solid rgba(225,29,72,.4); color: #9f1239; }
+
+/* ===== ROADMAP TIMELINE ===== */
+.timeline { margin: 20px 0; display: flex; flex-direction: column; gap: 0; }
+.tl-item {
+  display: grid; grid-template-columns: 120px 1px 1fr;
+  gap: 0 24px; min-height: 80px;
+}
+.tl-time {
+  text-align: right; padding-top: 4px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted2); letter-spacing: .05em;
+}
+.tl-line {
+  display: flex; flex-direction: column; align-items: center;
+}
+.tl-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--ink); border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--ink);
+  min-height: 10px; margin-top: 4px;
+}
+.tl-rule { flex: 1; width: 1px; background: var(--line); }
+.tl-item:last-child .tl-rule { display: none; }
+.tl-content { padding-bottom: 32px; }
+.tl-title { font-weight: 500; font-size: 14px; margin-bottom: 6px; }
+.tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.tl-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.tl-pill {
+  font-family: var(--mono); font-size: 10px;
+  padding: 2px 8px; border-radius: 2px;
+  background: var(--paper3); color: var(--muted); border: 1px solid var(--line);
+}
+
+/* ===== COMPARISON TABLE ===== */
+.ctable { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+.ctable th {
+  text-align: left; padding: 10px 16px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted2); border-bottom: 1px solid var(--line);
+  background: var(--paper2);
+}
+.ctable td {
+  padding: 10px 16px; border-bottom: 1px solid var(--line2);
+  color: var(--muted); vertical-align: top;
+}
+.ctable tr:last-child td { border-bottom: none; }
+.ctable td:first-child { color: var(--ink); font-weight: 500; }
+.good { color: #15803d; font-weight: 500; }
+.bad { color: #b91c1c; }
+.note { color: var(--muted2); font-size: 11px; }
+
+/* ===== CHECKLIST ===== */
+.checklist { margin: 16px 0; display: flex; flex-direction: column; gap: 6px; }
+.cl-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; background: var(--paper2);
+  border-radius: 3px; font-size: 13px;
+  cursor: pointer; transition: background .15s;
+  user-select: none;
+}
+.cl-item:hover { background: var(--paper3); }
+.cl-item.checked { opacity: .55; text-decoration: line-through; color: var(--muted); }
+.cl-box {
+  width: 16px; height: 16px; min-width: 16px;
+  border: 1.5px solid var(--muted2);
+  border-radius: 2px; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; margin-top: 2px;
+  transition: all .15s; color: #fff;
+}
+.cl-item.checked .cl-box { background: var(--ink); border-color: var(--ink); }
+
+/* ===== TWO COL ===== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.info-box {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--paper);
+}
+.ib-title { font-weight: 500; font-size: 13px; margin-bottom: 8px; }
+.ib-body { font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+/* ===== CHAPTER NAV ===== */
+.ch-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 72px;
+  border-top: 1px solid var(--line2);
+}
+.cn-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 3px;
+  font-family: var(--sans); font-size: 13px;
+  cursor: pointer; transition: all .15s; border: 1px solid;
+}
+.cn-btn-outline { background: transparent; border-color: var(--line); color: var(--muted); }
+.cn-btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+.cn-btn-fill { background: var(--ink); border-color: var(--ink); color: #fff; }
+.cn-btn-fill:hover { background: #1f1f2a; }
+.cn-btn:disabled { opacity: .3; cursor: default; }
+.ch-counter { font-family: var(--mono); font-size: 11px; color: var(--muted2); }
+
+/* ===== QUIZ ===== */
+.quiz {
+  border: 1px solid var(--line); border-radius: 4px;
+  padding: 22px 24px; margin: 20px 0;
+  background: var(--paper2);
+}
+.quiz-q { font-size: 14px; font-weight: 500; margin-bottom: 16px; line-height: 1.5; }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.q-opt {
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 3px; padding: 10px 14px;
+  font-size: 13px; color: var(--muted);
+  cursor: pointer; text-align: left;
+  transition: all .15s; font-family: var(--sans);
+}
+.q-opt:hover:not(:disabled) { border-color: var(--ink); color: var(--ink); background: var(--paper2); }
+.q-opt.correct { background: rgba(21,128,61,.08); border-color: rgba(21,128,61,.4); color: #15803d; }
+.q-opt.wrong { background: rgba(185,28,28,.06); border-color: rgba(185,28,28,.3); color: #b91c1c; }
+.q-fb { margin-top: 12px; padding: 10px 14px; border-radius: 3px; font-size: 13px; display: none; line-height: 1.6; }
+.q-fb.show { display: block; }
+.q-fb.ok { background: rgba(21,128,61,.06); border-left: 3px solid #15803d; color: #14532d; }
+.q-fb.no { background: rgba(185,28,28,.06); border-left: 3px solid #b91c1c; color: #7f1d1d; }
+
+/* ===== PROJECTS ===== */
+.project {
+  border: 1px solid var(--line); border-radius: 4px;
+  padding: 24px; margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.project:hover { border-color: rgba(0,0,0,0.2); }
+.proj-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.proj-title { font-family: var(--serif); font-size: 20px; font-weight: 400; }
+.proj-difficulty { font-family: var(--mono); font-size: 9px; padding: 4px 10px; border-radius: 2px; border: 1px solid; text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; margin-top: 4px; }
+.diff-1 { background: rgba(21,128,61,.08); border-color: rgba(21,128,61,.3); color: #15803d; }
+.diff-2 { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.3); color: #b45309; }
+.diff-3 { background: rgba(225,29,72,.08); border-color: rgba(225,29,72,.3); color: #be123c; }
+.proj-desc { font-size: 13px; color: var(--muted); line-height: 1.75; margin-bottom: 14px; }
+.proj-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+.proj-tag { font-family: var(--mono); font-size: 10px; padding: 3px 9px; background: var(--paper2); border: 1px solid var(--line); border-radius: 2px; color: var(--muted); }
+
+/* ===== SECRETS BOX ===== */
+.secrets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 14px; margin: 16px 0; }
+.secret-card {
+  background: var(--ink); color: #fff;
+  padding: 20px 22px; border-radius: 4px;
+}
+.sc-icon { font-size: 18px; margin-bottom: 10px; }
+.sc-title { font-weight: 500; font-size: 13px; margin-bottom: 6px; }
+.sc-body { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+/* ===== PHASE CARDS ===== */
+.phases { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1px; background: var(--line2); border: 1px solid var(--line2); margin: 20px 0; }
+.phase-card { background: var(--paper); padding: 20px 22px; }
+.pc-num { font-family: var(--mono); font-size: 28px; font-weight: 300; color: var(--line); margin-bottom: 8px; line-height: 1; }
+.pc-title { font-weight: 500; font-size: 13px; margin-bottom: 6px; }
+.pc-time { font-family: var(--mono); font-size: 10px; color: var(--muted2); margin-bottom: 10px; }
+.pc-list { list-style: none; }
+.pc-list li { font-size: 12px; color: var(--muted); padding: 2px 0; padding-left: 12px; position: relative; }
+.pc-list li::before { content: '—'; position: absolute; left: 0; color: var(--line); }
+
+/* Inline code */
+code { font-family: var(--mono); font-size: 11px; background: var(--paper3); padding: 2px 6px; border-radius: 2px; color: var(--ink); }
+strong { font-weight: 500; }
+p { margin: 10px 0; color: var(--muted); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 960px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .hero, .chapter, .ch-nav { padding-left: 24px; padding-right: 24px; }
+  .hero-grid { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="eyebrow">Full-Stack Roadmap</div>
+    <h1>Software<br>Developer<br><em>Masterplan</em></h1>
+  </div>
+  <div class="sb-progress-wrap">
+    <div class="sb-progress-label">
+      <span>Progress</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="sb-progress-track">
+      <div class="sb-progress-fill" id="progFill"></div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section-label">Foundation</div>
+    <div class="sb-item active" onclick="go(0)"><div class="sb-dot"></div><span>Overview & Learning Path</span><span class="sb-check">✓</span></div>
+    <div class="sb-item" onclick="go(1)"><div class="sb-dot"></div><span>Python — Zero to Advanced</span><span class="sb-check">✓</span></div>
+    <div class="sb-item" onclick="go(2)"><div class="sb-dot"></div><span>MySQL & Databases</span><span class="sb-check">✓</span></div>
+    <div class="sb-section-label">Backend</div>
+    <div class="sb-item" onclick="go(3)"><div class="sb-dot"></div><span>Django Framework</span><span class="sb-check">✓</span></div>
+    <div class="sb-item" onclick="go(4)"><div class="sb-dot"></div><span>Django REST Framework</span><span class="sb-check">✓</span></div>
+    <div class="sb-section-label">Frontend</div>
+    <div class="sb-item" onclick="go(5)"><div class="sb-dot"></div><span>AJAX — Deep Dive</span><span class="sb-check">✓</span></div>
+    <div class="sb-item" onclick="go(6)"><div class="sb-dot"></div><span>React — Complete Guide</span><span class="sb-check">✓</span></div>
+    <div class="sb-section-label">Mastery</div>
+    <div class="sb-item" onclick="go(7)"><div class="sb-dot"></div><span>Connecting the Full Stack</span><span class="sb-check">✓</span></div>
+    <div class="sb-item" onclick="go(8)"><div class="sb-dot"></div><span>Projects & Secrets</span><span class="sb-check">✓</span></div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="mainEl">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Your complete roadmap · Python · Django · React</div>
+      <h2 class="hero-title">Zero to<br><em>Full-Stack</em><br>Developer</h2>
+      <p class="hero-desc">Every concept, every secret, every pattern you need to master your exact stack. This is your inch-by-inch guide from beginner to job-ready developer.</p>
+      <div class="stack-pills">
+        <span class="stack-pill sp-py">Python</span>
+        <span class="stack-pill sp-dj">Django</span>
+        <span class="stack-pill sp-de">Django REST</span>
+        <span class="stack-pill sp-aj">AJAX</span>
+        <span class="stack-pill sp-db">MySQL</span>
+        <span class="stack-pill sp-re">React</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="overview-box">
+        <h3>At a glance</h3>
+        <div class="ov-row"><span class="ov-label">Chapters</span><span class="ov-val">9 deep-dive modules</span></div>
+        <div class="ov-row"><span class="ov-label">Estimated time</span><span class="ov-val">6–9 months</span></div>
+        <div class="ov-row"><span class="ov-label">Projects to build</span><span class="ov-val green">12 real projects</span></div>
+        <div class="ov-row"><span class="ov-label">Tech topics</span><span class="ov-val">120+ concepts</span></div>
+        <div class="ov-row"><span class="ov-label">Level</span><span class="ov-val">Zero → Job-ready</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CH 0: OVERVIEW ========== -->
+<div class="chapter visible" id="ch0">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 00</span><span class="ch-badge badge-beginner">Orientation</span></div>
+    <h2 class="ch-title">Your Learning Path</h2>
+    <p class="ch-desc">The exact order to learn everything. What to learn first, why it matters, and how long each phase takes. Follow this sequence and nothing will feel confusing.</p>
+  </div>
+
+  <div class="sh">The 6-phase learning sequence</div>
+  <div class="phases">
+    <div class="phase-card">
+      <div class="pc-num">01</div>
+      <div class="pc-title">Python Foundations</div>
+      <div class="pc-time">Weeks 1–4</div>
+      <ul class="pc-list">
+        <li>Syntax & data types</li>
+        <li>Functions & OOP</li>
+        <li>File handling</li>
+        <li>Virtual environments</li>
+        <li>pip & packages</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <div class="pc-num">02</div>
+      <div class="pc-title">MySQL & Databases</div>
+      <div class="pc-time">Weeks 3–5</div>
+      <ul class="pc-list">
+        <li>SQL fundamentals</li>
+        <li>Joins & queries</li>
+        <li>Indexes & performance</li>
+        <li>Normalization</li>
+        <li>Transactions</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <div class="pc-num">03</div>
+      <div class="pc-title">Django</div>
+      <div class="pc-time">Weeks 5–10</div>
+      <ul class="pc-list">
+        <li>MTV architecture</li>
+        <li>ORM & models</li>
+        <li>Views & URLs</li>
+        <li>Templates</li>
+        <li>Auth system</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <div class="pc-num">04</div>
+      <div class="pc-title">Django REST</div>
+      <div class="pc-time">Weeks 10–14</div>
+      <ul class="pc-list">
+        <li>Serializers</li>
+        <li>ViewSets & routers</li>
+        <li>JWT auth</li>
+        <li>Permissions</li>
+        <li>API design</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <div class="pc-num">05</div>
+      <div class="pc-title">Frontend</div>
+      <div class="pc-time">Weeks 14–22</div>
+      <ul class="pc-list">
+        <li>HTML/CSS/JS</li>
+        <li>AJAX & fetch()</li>
+        <li>React basics</li>
+        <li>Hooks & state</li>
+        <li>API integration</li>
+      </ul>
+    </div>
+    <div class="phase-card">
+      <div class="pc-num">06</div>
+      <div class="pc-title">Full Stack</div>
+      <div class="pc-time">Weeks 22–36</div>
+      <ul class="pc-list">
+        <li>React + DRF</li>
+        <li>Auth flows</li>
+        <li>Deployment</li>
+        <li>Projects</li>
+        <li>Job prep</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sh">The golden rule of this stack</div>
+  <div class="callout c-secret"><span class="c-icon">🔑</span><span><strong>Learn the request/response cycle deeply before anything else.</strong> Everything in this stack — Django views, DRF serializers, React fetching data, AJAX — is about sending a request and handling a response. If you internalize HTTP deeply, the entire stack clicks into place.</span></div>
+
+  <div class="sh">Prerequisites checklist</div>
+  <div class="checklist" id="prereq-list">
+    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span>Understand what a web server is and what it does</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span>Know basic HTML and CSS</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span>Understand what a database is</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span>Can use a terminal / command line</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span>Have Python installed on your machine</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span>Have VS Code or PyCharm set up</span></div>
+  </div>
+
+  <div class="sh">How to use this guide</div>
+  <div class="two-col">
+    <div class="info-box">
+      <div class="ib-title">Read every concept card</div>
+      <div class="ib-body">Each topic card has a "Secret" — the non-obvious thing that most tutorials skip. These secrets are what separate a developer who knows the syntax from one who truly understands the tool.</div>
+    </div>
+    <div class="info-box">
+      <div class="ib-title">Build as you learn</div>
+      <div class="ib-body">Don't read everything first then code. After each chapter, build the practice project listed. You will forget 80% of what you read but remember 90% of what you build.</div>
+    </div>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" disabled>← Back</button>
+    <span class="ch-counter">1 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(0)">Python: Zero to Advanced →</button>
+  </div>
+</div>
+
+<!-- ========== CH 1: PYTHON ========== -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 01</span><span class="ch-badge badge-beginner">Beginner → Advanced</span></div>
+    <h2 class="ch-title">Python <span style="font-style:italic;color:var(--muted)">— Complete</span></h2>
+    <p class="ch-desc">Python is the engine of your entire backend. You must know it deeply — not just syntax, but how Python thinks.</p>
+  </div>
+
+  <div class="sh">Core language — foundations</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Variables & types</div>
+      <div class="tc-title">Data types & type system</div>
+      <div class="tc-body">int, float, str, bool, None. Python is dynamically typed — variables don't have fixed types. <code>type(x)</code> checks type at runtime.</div>
+      <div class="tc-secret">Python uses "duck typing" — if it walks like a duck and quacks like a duck, it's a duck. Django's ORM relies on this heavily.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Data structures</div>
+      <div class="tc-title">Lists, dicts, sets, tuples</div>
+      <div class="tc-body">List: ordered, mutable. Dict: key-value, ordered (3.7+). Set: unique values. Tuple: immutable. Know when to use each.</div>
+      <div class="tc-secret">Django querysets return dict-like objects. Knowing dict operations cold makes ORM work effortless.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Control flow</div>
+      <div class="tc-title">if/else, loops, comprehensions</div>
+      <div class="tc-body">for loops, while loops. List comprehensions: <code>[x*2 for x in items]</code>. Dict comprehensions. Generator expressions.</div>
+      <div class="tc-secret">List comprehensions are 35% faster than equivalent for loops. Use them everywhere in Django views.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Functions</div>
+      <div class="tc-title">Functions, args, kwargs</div>
+      <div class="tc-body"><code>*args</code> = positional arguments list. <code>**kwargs</code> = keyword arguments dict. Default parameters. Lambda functions. First-class functions.</div>
+      <div class="tc-secret">Django's CBVs (Class-Based Views) pass everything through **kwargs. If you don't understand this, CBVs will be confusing forever.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">OOP</div>
+      <div class="tc-title">Classes & OOP principles</div>
+      <div class="tc-body">class, __init__, self, inheritance, super(). Properties. Dunder methods: __str__, __repr__, __len__. Encapsulation.</div>
+      <div class="tc-secret">Every Django model is a Python class. Every Django view can be a class. OOP isn't optional — it's the foundation of Django.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Decorators</div>
+      <div class="tc-title">Decorators — Django's secret weapon</div>
+      <div class="tc-body">Functions that wrap other functions. <code>@login_required</code>, <code>@property</code>, <code>@staticmethod</code>. Write your own decorators.</div>
+      <div class="tc-secret">@login_required, @permission_required, @cache_page — all of Django's most powerful features are decorators. Master this pattern first.</div>
+    </div>
+  </div>
+
+  <div class="sh">Intermediate Python</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Modules</div>
+      <div class="tc-title">Modules, packages, imports</div>
+      <div class="tc-body"><code>import</code>, <code>from x import y</code>, relative imports. <code>__init__.py</code>. Understanding how Python finds modules.</div>
+      <div class="tc-secret">Django's entire app system is just Python's import system. If you understand how imports work, Django's apps.py and AppConfig make immediate sense.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Error handling</div>
+      <div class="tc-title">Exceptions & error handling</div>
+      <div class="tc-body">try/except/finally. Raising exceptions. Custom exception classes. Exception hierarchy. Logging errors properly.</div>
+      <div class="tc-secret">Never catch bare <code>except:</code> — it hides bugs. Always catch specific exceptions. In Django APIs, exceptions become HTTP error responses.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Files & IO</div>
+      <div class="tc-title">File handling & context managers</div>
+      <div class="tc-body"><code>with open()</code> as context manager. Reading/writing text and binary files. <code>pathlib</code> for modern file paths. <code>os</code> module.</div>
+      <div class="tc-secret">Django's file upload system uses Python file objects. Understanding context managers (with statement) prevents memory leaks.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Iterators</div>
+      <div class="tc-title">Iterators & generators</div>
+      <div class="tc-body"><code>yield</code> keyword. Generator functions. <code>__iter__</code> and <code>__next__</code>. Lazy evaluation saves memory on large datasets.</div>
+      <div class="tc-secret">Django QuerySets are lazy iterators — they don't hit the database until you iterate them. This is why you see <code>list(queryset)</code> to force evaluation.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Environments</div>
+      <div class="tc-title">Virtual environments & pip</div>
+      <div class="tc-body"><code>python -m venv venv</code>. Activating. <code>pip install</code>. <code>requirements.txt</code>. Never install packages globally.</div>
+      <div class="tc-secret">Every Django project MUST have its own venv. Package conflicts will ruin your career if you skip this. Use <code>pip freeze > requirements.txt</code> always.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-py)">Advanced</div>
+      <div class="tc-title">Type hints (Python 3.9+)</div>
+      <div class="tc-body"><code>def greet(name: str) -> str:</code>. List[int], Dict[str, Any], Optional[str]. mypy for type checking.</div>
+      <div class="tc-secret">DRF serializers benefit enormously from type hints. They catch bugs before runtime and make API code self-documenting.</div>
+    </div>
+  </div>
+
+  <div class="sh">Essential Python for Django work</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">python_essentials.py</span><button class="code-copy" onclick="copyText(this,'py-ess')">Copy</button></div>
+    <pre id="py-ess"><span class="cm"># 1. List comprehensions (used everywhere in Django views)</span>
+user_names = [user.username <span class="kw">for</span> user <span class="kw">in</span> users <span class="kw">if</span> user.is_active]
+
+<span class="cm"># 2. Dictionary comprehension</span>
+user_map = {user.id: user.name <span class="kw">for</span> user <span class="kw">in</span> users}
+
+<span class="cm"># 3. Decorator pattern (how @login_required works)</span>
+<span class="kw">def</span> <span class="fn">require_auth</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        <span class="kw">if not</span> is_authenticated():
+            <span class="kw">raise</span> <span class="cls">PermissionError</span>(<span class="str">"Login required"</span>)
+        <span class="kw">return</span> func(*args, **kwargs)
+    <span class="kw">return</span> wrapper
+
+<span class="kw">@require_auth</span>
+<span class="kw">def</span> <span class="fn">dashboard</span>(request):
+    <span class="kw">pass</span>
+
+<span class="cm"># 4. Context manager (for transactions)</span>
+<span class="kw">with</span> transaction.<span class="fn">atomic</span>():
+    order.<span class="fn">save</span>()
+    inventory.<span class="fn">update</span>(quantity=F(<span class="str">'quantity'</span>) - <span class="num">1</span>)
+
+<span class="cm"># 5. *args and **kwargs</span>
+<span class="kw">def</span> <span class="fn">api_call</span>(endpoint, *args, method=<span class="str">'GET'</span>, **kwargs):
+    <span class="cm"># kwargs might contain: timeout=5, headers={...}</span>
+    <span class="kw">pass</span></pre>
+  </div>
+
+  <div class="sh">Quiz checkpoint</div>
+  <div class="quiz">
+    <div class="quiz-q">What does this Python code return? <code>[x**2 for x in range(5) if x % 2 == 0]</code></div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="qz(this,false,'q-py')">[0, 1, 4, 9, 16]</button>
+      <button class="q-opt" onclick="qz(this,true,'q-py')">[0, 4, 16]</button>
+      <button class="q-opt" onclick="qz(this,false,'q-py')">[1, 9]</button>
+      <button class="q-opt" onclick="qz(this,false,'q-py')">[4, 16]</button>
+    </div>
+    <div class="q-fb" id="q-py"></div>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(0)">← Overview</button>
+    <span class="ch-counter">2 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(1)">MySQL & Databases →</button>
+  </div>
+</div>
+
+<!-- ========== CH 2: MYSQL ========== -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 02</span><span class="ch-badge badge-beginner">Beginner → Intermediate</span></div>
+    <h2 class="ch-title">MySQL <span style="font-style:italic;color:var(--muted)">& Databases</span></h2>
+    <p class="ch-desc">Every piece of data in your app lives in MySQL. Understanding it deeply makes Django's ORM a superpower instead of a black box.</p>
+  </div>
+
+  <div class="sh">SQL fundamentals</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-db)">DDL</div>
+      <div class="tc-title">CREATE, ALTER, DROP</div>
+      <div class="tc-body">CREATE TABLE defines structure. ALTER TABLE modifies it. DROP TABLE removes it. Django migrations do all of this automatically.</div>
+      <div class="tc-secret">Django migrations are just Python code that generates these SQL statements. Reading migration files teaches you what Django is actually doing to your database.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-db)">DML</div>
+      <div class="tc-title">SELECT, INSERT, UPDATE, DELETE</div>
+      <div class="tc-body">The 4 basic operations. WHERE filters. ORDER BY sorts. LIMIT paginates. GROUP BY aggregates. These map directly to Django ORM methods.</div>
+      <div class="tc-secret">Django ORM's <code>.filter()</code> = WHERE, <code>.order_by()</code> = ORDER BY, <code>.values()</code> = SELECT specific columns. Know SQL first, ORM later.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-db)">Joins</div>
+      <div class="tc-title">INNER, LEFT, RIGHT JOIN</div>
+      <div class="tc-body">INNER JOIN: matching rows only. LEFT JOIN: all left rows + matching right. RIGHT JOIN: opposite. Combines data from multiple tables.</div>
+      <div class="tc-secret">Django's <code>select_related()</code> generates SQL JOINs. Without knowing joins, you'll never optimize N+1 query problems — the #1 performance killer.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-db)">Indexes</div>
+      <div class="tc-title">Indexes & query performance</div>
+      <div class="tc-body">Indexes speed up lookups dramatically. Primary key always indexed. Add indexes to columns you filter/sort by frequently. EXPLAIN ANALYZE shows query plans.</div>
+      <div class="tc-secret">A missing index on a foreign key column can make a page load 100x slower. Django's <code>db_index=True</code> on model fields adds them automatically.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-db)">Normalization</div>
+      <div class="tc-title">1NF, 2NF, 3NF explained</div>
+      <div class="tc-body">1NF: atomic values, no repeating groups. 2NF: no partial dependency. 3NF: no transitive dependency. Good design prevents duplication and inconsistency.</div>
+      <div class="tc-secret">Most Django models follow 3NF naturally if you use ForeignKey correctly. Denormalization (breaking rules intentionally) is a valid optimization for read-heavy APIs.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-db)">Transactions</div>
+      <div class="tc-title">ACID & transactions</div>
+      <div class="tc-body">Atomicity, Consistency, Isolation, Durability. BEGIN/COMMIT/ROLLBACK. All-or-nothing operations. Critical for financial/inventory data.</div>
+      <div class="tc-secret">Django's <code>transaction.atomic()</code> wraps operations in a transaction. If any step raises an exception, the entire operation is rolled back. Use it for any multi-step save operation.</div>
+    </div>
+  </div>
+
+  <div class="sh">Essential SQL you must know cold</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">essential_queries.sql</span><button class="code-copy" onclick="copyText(this,'sql-ess')">Copy</button></div>
+    <pre id="sql-ess"><span class="cm">-- Basic SELECT with filter and sort</span>
+<span class="kw">SELECT</span> id, username, email
+<span class="kw">FROM</span> users
+<span class="kw">WHERE</span> is_active = <span class="num">1</span> <span class="kw">AND</span> role = <span class="str">'admin'</span>
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span> <span class="kw">OFFSET</span> <span class="num">0</span>;
+
+<span class="cm">-- JOIN (used by Django select_related)</span>
+<span class="kw">SELECT</span> orders.id, users.username, orders.total
+<span class="kw">FROM</span> orders
+<span class="kw">INNER JOIN</span> users <span class="kw">ON</span> orders.user_id = users.id
+<span class="kw">WHERE</span> orders.status = <span class="str">'pending'</span>;
+
+<span class="cm">-- Aggregation (used by Django annotate/aggregate)</span>
+<span class="kw">SELECT</span> category, <span class="fn">COUNT</span>(*) as count, <span class="fn">AVG</span>(price) as avg_price
+<span class="kw">FROM</span> products
+<span class="kw">GROUP BY</span> category
+<span class="kw">HAVING COUNT</span>(*) > <span class="num">5</span>;
+
+<span class="cm">-- Subquery</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> user_id <span class="kw">FROM</span> orders
+    <span class="kw">WHERE</span> total > <span class="num">1000</span>
+);
+
+<span class="cm">-- Index creation (Django: db_index=True)</span>
+<span class="kw">CREATE INDEX</span> idx_users_email <span class="kw">ON</span> users(email);
+<span class="kw">EXPLAIN ANALYZE SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email = <span class="str">'x@x.com'</span>;</pre>
+  </div>
+
+  <div class="callout c-secret"><span class="c-icon">🔑</span><span><strong>The N+1 query problem</strong> — the most common performance bug in Django. It happens when you loop over a queryset and access a related object inside the loop, firing one extra DB query per row. Fix: <code>queryset.select_related('author')</code> or <code>queryset.prefetch_related('tags')</code>. Always check Django Debug Toolbar to spot this.</span></div>
+
+  <div class="sh">MySQL + Django connection setup</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">settings.py — DATABASES config</span><button class="code-copy" onclick="copyText(this,'db-cfg')">Copy</button></div>
+    <pre id="db-cfg"><span class="cm"># settings.py</span>
+<span class="kw">import</span> os
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="fn">load_dotenv</span>()
+
+DATABASES = {
+    <span class="str">'default'</span>: {
+        <span class="str">'ENGINE'</span>: <span class="str">'django.db.backends.mysql'</span>,
+        <span class="str">'NAME'</span>: os.<span class="prop">environ</span>[<span class="str">'DB_NAME'</span>],
+        <span class="str">'USER'</span>: os.<span class="prop">environ</span>[<span class="str">'DB_USER'</span>],
+        <span class="str">'PASSWORD'</span>: os.<span class="prop">environ</span>[<span class="str">'DB_PASSWORD'</span>],
+        <span class="str">'HOST'</span>: os.<span class="prop">environ</span>.get(<span class="str">'DB_HOST'</span>, <span class="str">'localhost'</span>),
+        <span class="str">'PORT'</span>: os.<span class="prop">environ</span>.get(<span class="str">'DB_PORT'</span>, <span class="str">'3306'</span>),
+        <span class="str">'OPTIONS'</span>: {
+            <span class="str">'charset'</span>: <span class="str">'utf8mb4'</span>,  <span class="cm"># supports emoji</span>
+            <span class="str">'init_command'</span>: <span class="str">"SET sql_mode='STRICT_TRANS_TABLES'"</span>
+        }
+    }
+}
+<span class="cm"># Install: pip install mysqlclient</span></pre>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(1)">← Python</button>
+    <span class="ch-counter">3 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(2)">Django Framework →</button>
+  </div>
+</div>
+
+<!-- ========== CH 3: DJANGO ========== -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 03</span><span class="ch-badge badge-intermediate">Intermediate</span></div>
+    <h2 class="ch-title">Django <span style="font-style:italic;color:var(--muted)">Framework</span></h2>
+    <p class="ch-desc">Django is "batteries included" — it comes with everything. Your job is to learn where all the batteries are and when to use them.</p>
+  </div>
+
+  <div class="sh">Django's MTV architecture</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">Request in</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">URLs (urls.py)</div>
+        <div class="tl-body">Django matches the URL to a view function or class using regex/path patterns. This is the router.</div>
+        <div class="tl-pills"><span class="tl-pill">path()</span><span class="tl-pill">include()</span><span class="tl-pill">re_path()</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Route matched</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Middleware</div>
+        <div class="tl-body">Runs before and after every request/response. Authentication, session handling, CSRF protection, security headers happen here.</div>
+        <div class="tl-pills"><span class="tl-pill">AuthMiddleware</span><span class="tl-pill">CsrfMiddleware</span><span class="tl-pill">SessionMiddleware</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">View called</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">View (views.py) — The V in MTV</div>
+        <div class="tl-body">Receives the request, contains business logic, queries the database via the ORM, and returns a response.</div>
+        <div class="tl-pills"><span class="tl-pill">Function-based views</span><span class="tl-pill">Class-based views</span><span class="tl-pill">Mixins</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Data needed</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Model (models.py) — The M in MTV</div>
+        <div class="tl-body">Defines the data structure. The ORM translates Python to SQL automatically. Each model class = one database table.</div>
+        <div class="tl-pills"><span class="tl-pill">CharField</span><span class="tl-pill">ForeignKey</span><span class="tl-pill">ManyToMany</span><span class="tl-pill">migrations</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Response out</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Template (templates/) — The T in MTV</div>
+        <div class="tl-body">For traditional Django apps. HTML files with Django template tags. For APIs (DRF), templates are replaced by JSON serializers.</div>
+        <div class="tl-pills"><span class="tl-pill">{{ variable }}</span><span class="tl-pill">{% block %}</span><span class="tl-pill">{% for %}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh">The Django ORM — complete guide</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Models</div>
+      <div class="tc-title">Defining models</div>
+      <div class="tc-body">Each model = a DB table. Fields define columns. Meta class adds options. <code>__str__</code> defines string representation.</div>
+      <div class="tc-secret">Always define <code>__str__</code> on every model. Django admin, shell, and DRF all use it to display objects. Skip it and debugging becomes painful.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Relationships</div>
+      <div class="tc-title">ForeignKey, ManyToMany, OneToOne</div>
+      <div class="tc-body">ForeignKey = one-to-many. ManyToManyField = many-to-many (creates junction table). OneToOneField = one-to-one. <code>on_delete</code> behavior matters.</div>
+      <div class="tc-secret"><code>related_name</code> is the most missed concept. <code>ForeignKey(User, related_name='posts')</code> lets you do <code>user.posts.all()</code> — essential for API design.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Querying</div>
+      <div class="tc-title">QuerySet API</div>
+      <div class="tc-body"><code>.all()</code>, <code>.filter()</code>, <code>.exclude()</code>, <code>.get()</code>, <code>.create()</code>, <code>.update()</code>, <code>.delete()</code>, <code>.order_by()</code>, <code>.values()</code></div>
+      <div class="tc-secret">QuerySets are lazy. <code>qs = Post.objects.filter(active=True)</code> doesn't hit DB. Only iteration, <code>len()</code>, <code>list()</code>, or template rendering triggers the query.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Lookups</div>
+      <div class="tc-title">Field lookups & Q objects</div>
+      <div class="tc-body"><code>__exact</code>, <code>__contains</code>, <code>__icontains</code>, <code>__gt</code>, <code>__lt</code>, <code>__in</code>, <code>__startswith</code>. Q objects for complex OR/AND queries.</div>
+      <div class="tc-secret"><code>Q(name__icontains='ali') | Q(email__icontains='ali')</code> — this is how you build search functionality. Combine multiple Q objects for complex searches.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Migrations</div>
+      <div class="tc-title">makemigrations & migrate</div>
+      <div class="tc-body"><code>python manage.py makemigrations</code> creates migration files. <code>migrate</code> applies them to the database. Never edit migration files manually.</div>
+      <div class="tc-secret">Always commit migration files to git. If your team has migration conflicts, use <code>python manage.py squashmigrations</code> to clean up. Never delete migrations from a production app.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Optimization</div>
+      <div class="tc-title">select_related & prefetch_related</div>
+      <div class="tc-body"><code>select_related</code>: follow ForeignKey via SQL JOIN. <code>prefetch_related</code>: separate query for ManyToMany/reverse FK. Eliminates N+1.</div>
+      <div class="tc-secret">Profile your queries with Django Debug Toolbar. A list page showing 20 posts with author names can fire 21 queries without select_related. With it: just 1.</div>
+    </div>
+  </div>
+
+  <div class="sh">Django project structure & setup</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">models.py — complete model example</span><button class="code-copy" onclick="copyText(this,'dj-model')">Copy</button></div>
+    <pre id="dj-model"><span class="kw">from</span> django.db <span class="kw">import</span> models
+<span class="kw">from</span> django.contrib.auth.models <span class="kw">import</span> User
+
+<span class="kw">class</span> <span class="cls">Category</span>(models.<span class="cls">Model</span>):
+    name = models.<span class="cls">CharField</span>(max_length=<span class="num">100</span>, unique=<span class="kw">True</span>)
+    slug = models.<span class="cls">SlugField</span>(unique=<span class="kw">True</span>)
+
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        verbose_name_plural = <span class="str">'categories'</span>
+        ordering = [<span class="str">'name'</span>]
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(self):
+        <span class="kw">return</span> self.name
+
+<span class="kw">class</span> <span class="cls">Post</span>(models.<span class="cls">Model</span>):
+    <span class="cls">STATUS</span> = [(<span class="str">'draft'</span>, <span class="str">'Draft'</span>), (<span class="str">'published'</span>, <span class="str">'Published'</span>)]
+
+    title     = models.<span class="cls">CharField</span>(max_length=<span class="num">200</span>)
+    body      = models.<span class="cls">TextField</span>()
+    author    = models.<span class="cls">ForeignKey</span>(User, on_delete=models.<span class="cls">CASCADE</span>,
+                                   related_name=<span class="str">'posts'</span>)
+    category  = models.<span class="cls">ForeignKey</span>(Category, on_delete=models.<span class="cls">SET_NULL</span>,
+                                   null=<span class="kw">True</span>, related_name=<span class="str">'posts'</span>)
+    tags      = models.<span class="cls">ManyToManyField</span>(<span class="str">'Tag'</span>, blank=<span class="kw">True</span>)
+    status    = models.<span class="cls">CharField</span>(max_length=<span class="num">10</span>, choices=<span class="cls">STATUS</span>,
+                                  default=<span class="str">'draft'</span>)
+    created   = models.<span class="cls">DateTimeField</span>(auto_now_add=<span class="kw">True</span>)
+    updated   = models.<span class="cls">DateTimeField</span>(auto_now=<span class="kw">True</span>)
+
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        ordering = [<span class="str">'-created'</span>]
+        indexes = [models.<span class="cls">Index</span>(fields=[<span class="str">'status'</span>, <span class="str">'-created'</span>])]
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(self):
+        <span class="kw">return</span> self.title
+
+<span class="cm"># ORM queries</span>
+posts = Post.objects.<span class="fn">filter</span>(status=<span class="str">'published'</span>).\
+    <span class="fn">select_related</span>(<span class="str">'author'</span>, <span class="str">'category'</span>).\
+    <span class="fn">prefetch_related</span>(<span class="str">'tags'</span>)</pre>
+  </div>
+
+  <div class="sh">Django authentication system</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Auth</div>
+      <div class="tc-title">Built-in User model</div>
+      <div class="tc-body">Django ships with a complete user system: login, logout, password hashing, sessions, permissions. Use it — don't build your own.</div>
+      <div class="tc-secret">Always use a custom user model from the start: <code>class User(AbstractUser)</code> in a separate app. Changing the user model later is extremely painful.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-dj)">Permissions</div>
+      <div class="tc-title">Permissions & groups</div>
+      <div class="tc-body">Every model gets 4 permissions: add, change, delete, view. Group users for role-based access. <code>@permission_required</code> decorator.</div>
+      <div class="tc-secret">Use <code>user.has_perm('app.action_model')</code> in views and templates. Design your permission system before you build the API — retrofitting it is hard.</div>
+    </div>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(2)">← MySQL</button>
+    <span class="ch-counter">4 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(3)">Django REST Framework →</button>
+  </div>
+</div>
+
+<!-- ========== CH 4: DRF ========== -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 04</span><span class="ch-badge badge-intermediate">Intermediate → Advanced</span></div>
+    <h2 class="ch-title">Django REST <span style="font-style:italic;color:var(--muted)">Framework</span></h2>
+    <p class="ch-desc">DRF turns Django into a world-class API backend. It's how your React frontend talks to your Python backend.</p>
+  </div>
+
+  <div class="sh">DRF architecture</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">HTTP Request</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Router → URL → View</div>
+        <div class="tl-body">DRF Routers auto-generate URLs for ViewSets. <code>/api/posts/</code> (list/create) and <code>/api/posts/1/</code> (retrieve/update/delete).</div>
+        <div class="tl-pills"><span class="tl-pill">DefaultRouter</span><span class="tl-pill">SimpleRouter</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Auth check</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Authentication & Permissions</div>
+        <div class="tl-body">Who are you? (Authentication) and what can you do? (Permissions). JWT tokens, session auth, API keys.</div>
+        <div class="tl-pills"><span class="tl-pill">IsAuthenticated</span><span class="tl-pill">JWT</span><span class="tl-pill">IsAdminUser</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Data in</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Serializer (input validation)</div>
+        <div class="tl-body">Converts incoming JSON to Python objects. Validates data. <code>serializer.is_valid()</code> before saving. Like Django Forms but for APIs.</div>
+        <div class="tl-pills"><span class="tl-pill">Serializer</span><span class="tl-pill">ModelSerializer</span><span class="tl-pill">validate_()</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Business logic</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">ViewSet / APIView</div>
+        <div class="tl-body">Handles the request. Calls the ORM. Returns data. ViewSet bundles list, create, retrieve, update, destroy into one class.</div>
+        <div class="tl-pills"><span class="tl-pill">ModelViewSet</span><span class="tl-pill">APIView</span><span class="tl-pill">GenericAPIView</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Data out</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Serializer (output) → JSON Response</div>
+        <div class="tl-body">Converts Python objects (QuerySets, model instances) to JSON. Controls exactly which fields are exposed.</div>
+        <div class="tl-pills"><span class="tl-pill">Response(data)</span><span class="tl-pill">status codes</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh">Complete DRF example — Posts API</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">api/serializers.py</span><button class="code-copy" onclick="copyText(this,'drf-serial')">Copy</button></div>
+    <pre id="drf-serial"><span class="kw">from</span> rest_framework <span class="kw">import</span> serializers
+<span class="kw">from</span> .models <span class="kw">import</span> Post, Category
+
+<span class="kw">class</span> <span class="cls">CategorySerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        model = Category
+        fields = [<span class="str">'id'</span>, <span class="str">'name'</span>, <span class="str">'slug'</span>]
+
+<span class="kw">class</span> <span class="cls">PostSerializer</span>(serializers.<span class="cls">ModelSerializer</span>):
+    <span class="cm"># Nested serializer — category becomes an object not just an id</span>
+    category = <span class="cls">CategorySerializer</span>(read_only=<span class="kw">True</span>)
+    category_id = serializers.<span class="cls">PrimaryKeyRelatedField</span>(
+        queryset=Category.objects.<span class="fn">all</span>(), source=<span class="str">'category'</span>, write_only=<span class="kw">True</span>
+    )
+    author_name = serializers.<span class="cls">SerializerMethodField</span>()
+
+    <span class="kw">def</span> <span class="fn">get_author_name</span>(self, obj):
+        <span class="kw">return</span> obj.author.get_full_name() <span class="kw">or</span> obj.author.username
+
+    <span class="kw">def</span> <span class="fn">validate_title</span>(self, value):
+        <span class="cm"># Custom field validation</span>
+        <span class="kw">if</span> Post.objects.<span class="fn">filter</span>(title=value).<span class="fn">exists</span>():
+            <span class="kw">raise</span> serializers.<span class="cls">ValidationError</span>(<span class="str">"Title already exists."</span>)
+        <span class="kw">return</span> value
+
+    <span class="kw">class</span> <span class="cls">Meta</span>:
+        model = Post
+        fields = [<span class="str">'id'</span>,<span class="str">'title'</span>,<span class="str">'body'</span>,<span class="str">'category'</span>,<span class="str">'category_id'</span>,
+                  <span class="str">'author_name'</span>,<span class="str">'status'</span>,<span class="str">'created'</span>]
+        read_only_fields = [<span class="str">'id'</span>, <span class="str">'created'</span>, <span class="str">'author_name'</span>]</pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">api/views.py</span><button class="code-copy" onclick="copyText(this,'drf-views')">Copy</button></div>
+    <pre id="drf-views"><span class="kw">from</span> rest_framework <span class="kw">import</span> viewsets, permissions, filters
+<span class="kw">from</span> rest_framework.decorators <span class="kw">import</span> action
+<span class="kw">from</span> rest_framework.response <span class="kw">import</span> Response
+<span class="kw">from</span> django_filters.rest_framework <span class="kw">import</span> DjangoFilterBackend
+
+<span class="kw">class</span> <span class="cls">PostViewSet</span>(viewsets.<span class="cls">ModelViewSet</span>):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.<span class="cls">IsAuthenticatedOrReadOnly</span>]
+    filter_backends = [DjangoFilterBackend, filters.<span class="cls">SearchFilter</span>,
+                       filters.<span class="cls">OrderingFilter</span>]
+    filterset_fields = [<span class="str">'status'</span>, <span class="str">'category'</span>]
+    search_fields = [<span class="str">'title'</span>, <span class="str">'body'</span>]
+    ordering_fields = [<span class="str">'created'</span>, <span class="str">'title'</span>]
+
+    <span class="kw">def</span> <span class="fn">get_queryset</span>(self):
+        <span class="cm"># Only show own posts for non-staff users</span>
+        <span class="kw">if</span> self.request.user.is_staff:
+            <span class="kw">return</span> Post.objects.<span class="fn">all</span>().<span class="fn">select_related</span>(<span class="str">'author'</span>, <span class="str">'category'</span>)
+        <span class="kw">return</span> Post.objects.<span class="fn">filter</span>(author=self.request.user)
+
+    <span class="kw">def</span> <span class="fn">perform_create</span>(self, serializer):
+        <span class="cm"># Auto-set author to current user</span>
+        serializer.<span class="fn">save</span>(author=self.request.user)
+
+    <span class="dec">@action</span>(detail=<span class="kw">True</span>, methods=[<span class="str">'post'</span>])
+    <span class="kw">def</span> <span class="fn">publish</span>(self, request, pk=<span class="kw">None</span>):
+        <span class="cm"># Custom action: POST /api/posts/1/publish/</span>
+        post = self.<span class="fn">get_object</span>()
+        post.status = <span class="str">'published'</span>
+        post.<span class="fn">save</span>()
+        <span class="kw">return</span> <span class="cls">Response</span>({<span class="str">'status'</span>: <span class="str">'published'</span>})</pre>
+  </div>
+
+  <div class="sh">JWT Authentication — the modern standard</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">JWT setup with djangorestframework-simplejwt</span><button class="code-copy" onclick="copyText(this,'jwt-code')">Copy</button></div>
+    <pre id="jwt-code"><span class="cm"># pip install djangorestframework-simplejwt</span>
+<span class="cm"># settings.py</span>
+REST_FRAMEWORK = {
+    <span class="str">'DEFAULT_AUTHENTICATION_CLASSES'</span>: (
+        <span class="str">'rest_framework_simplejwt.authentication.JWTAuthentication'</span>,
+    ),
+    <span class="str">'DEFAULT_PERMISSION_CLASSES'</span>: [
+        <span class="str">'rest_framework.permissions.IsAuthenticated'</span>,
+    ],
+    <span class="str">'DEFAULT_PAGINATION_CLASS'</span>:
+        <span class="str">'rest_framework.pagination.PageNumberPagination'</span>,
+    <span class="str">'PAGE_SIZE'</span>: <span class="num">20</span>
+}
+
+<span class="cm"># urls.py</span>
+<span class="kw">from</span> rest_framework_simplejwt.views <span class="kw">import</span> (
+    TokenObtainPairView, TokenRefreshView
+)
+urlpatterns = [
+    path(<span class="str">'api/token/'</span>, TokenObtainPairView.as_view()),      <span class="cm"># login</span>
+    path(<span class="str">'api/token/refresh/'</span>, TokenRefreshView.as_view()), <span class="cm"># refresh</span>
+]
+<span class="cm"># Flow: POST /api/token/ → get access + refresh tokens</span>
+<span class="cm"># Send: Authorization: Bearer &lt;access_token&gt; in every request</span>
+<span class="cm"># When access expires: POST /api/token/refresh/ with refresh token</span></pre>
+  </div>
+
+  <div class="callout c-secret"><span class="c-icon">🔑</span><span><strong>The biggest DRF secret:</strong> <code>get_queryset()</code> is where your security lives. Always filter querysets based on <code>self.request.user</code>. If you return <code>Post.objects.all()</code> without checking ownership, any user can see everyone's data. This is how data leaks happen.</span></div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(3)">← Django</button>
+    <span class="ch-counter">5 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(4)">AJAX Deep Dive →</button>
+  </div>
+</div>
+
+<!-- ========== CH 5: AJAX ========== -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 05</span><span class="ch-badge badge-intermediate">Intermediate</span></div>
+    <h2 class="ch-title">AJAX <span style="font-style:italic;color:var(--muted)">— Deep Dive</span></h2>
+    <p class="ch-desc">AJAX is how your frontend talks to your Django API. This chapter focuses on AJAX specifically in the context of DRF — the patterns you'll use every day at work.</p>
+  </div>
+
+  <div class="sh">The fetch() API — complete professional patterns</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">api.js — reusable AJAX client</span><button class="code-copy" onclick="copyText(this,'ajax-client')">Copy</button></div>
+    <pre id="ajax-client"><span class="cm">// api.js — a production-ready AJAX client for your DRF backend</span>
+<span class="kw">const</span> API_BASE = <span class="str">'http://localhost:8000/api'</span>;
+
+<span class="kw">function</span> <span class="fn">getToken</span>() {
+    <span class="kw">return</span> localStorage.<span class="fn">getItem</span>(<span class="str">'access_token'</span>);
+}
+
+<span class="kw">async function</span> <span class="fn">apiFetch</span>(endpoint, options = {}) {
+    <span class="kw">const</span> url = <span class="str">`${API_BASE}${endpoint}`</span>;
+    <span class="kw">const</span> token = <span class="fn">getToken</span>();
+
+    <span class="kw">const</span> config = {
+        headers: {
+            <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+            ...(token ? { <span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span> } : {}),
+            ...options.headers
+        },
+        ...options
+    };
+
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url, config);
+
+    <span class="cm">// Auto-refresh token on 401</span>
+    <span class="kw">if</span> (res.status === <span class="num">401</span>) {
+        <span class="kw">const</span> refreshed = <span class="kw">await</span> <span class="fn">refreshToken</span>();
+        <span class="kw">if</span> (refreshed) <span class="kw">return</span> <span class="fn">apiFetch</span>(endpoint, options);
+        window.location = <span class="str">'/login'</span>;
+    }
+
+    <span class="kw">if</span> (!res.ok) {
+        <span class="kw">const</span> err = <span class="kw">await</span> res.<span class="fn">json</span>().catch(() => ({}));
+        <span class="kw">throw</span> { status: res.status, data: err };
+    }
+
+    <span class="kw">if</span> (res.status === <span class="num">204</span>) <span class="kw">return null</span>; <span class="cm">// No content (DELETE)</span>
+    <span class="kw">return</span> res.<span class="fn">json</span>();
+}
+
+<span class="cm">// Clean API methods</span>
+<span class="kw">const</span> api = {
+    <span class="fn">get</span>:    (url)         => <span class="fn">apiFetch</span>(url),
+    <span class="fn">post</span>:   (url, data)   => <span class="fn">apiFetch</span>(url, { method: <span class="str">'POST'</span>,   body: JSON.<span class="fn">stringify</span>(data) }),
+    <span class="fn">put</span>:    (url, data)   => <span class="fn">apiFetch</span>(url, { method: <span class="str">'PUT'</span>,    body: JSON.<span class="fn">stringify</span>(data) }),
+    <span class="fn">patch</span>:  (url, data)   => <span class="fn">apiFetch</span>(url, { method: <span class="str">'PATCH'</span>,  body: JSON.<span class="fn">stringify</span>(data) }),
+    <span class="fn">delete</span>: (url)         => <span class="fn">apiFetch</span>(url, { method: <span class="str">'DELETE'</span> }),
+};
+
+<span class="cm">// Usage</span>
+<span class="kw">const</span> posts = <span class="kw">await</span> api.<span class="fn">get</span>(<span class="str">'/posts/?status=published'</span>);
+<span class="kw">const</span> post  = <span class="kw">await</span> api.<span class="fn">post</span>(<span class="str">'/posts/'</span>, { title: <span class="str">'Hello'</span>, body: <span class="str">'...'</span> });
+<span class="kw">await</span>         api.<span class="fn">delete</span>(<span class="str">`/posts/${id}/`</span>);</pre>
+  </div>
+
+  <div class="sh">CSRF tokens — Django's security requirement</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">csrf_ajax.js — handling CSRF with Django</span><button class="code-copy" onclick="copyText(this,'csrf-code')">Copy</button></div>
+    <pre id="csrf-code"><span class="cm">// Django requires CSRF token for non-GET requests from browser clients</span>
+<span class="cm">// For DRF with JWT: disable CSRF (JWT is already stateless)</span>
+<span class="cm">// For Django sessions: always include the CSRF token</span>
+
+<span class="kw">function</span> <span class="fn">getCsrfToken</span>() {
+    <span class="kw">return</span> document.cookie
+        .<span class="fn">split</span>(<span class="str">';'</span>)
+        .<span class="fn">find</span>(c => c.<span class="fn">trim</span>().<span class="fn">startsWith</span>(<span class="str">'csrftoken='</span>))
+        ?.<span class="fn">split</span>(<span class="str">'='</span>)[<span class="num">1</span>];
+}
+
+<span class="cm">// Include in AJAX headers when using session auth</span>
+headers: {
+    <span class="str">'X-CSRFToken'</span>: <span class="fn">getCsrfToken</span>(),
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>
+}
+
+<span class="cm">// In DRF settings — if using JWT, set this:</span>
+<span class="cm"># REST_FRAMEWORK = {</span>
+<span class="cm">#   'DEFAULT_AUTHENTICATION_CLASSES': [</span>
+<span class="cm">#     'rest_framework_simplejwt.authentication.JWTAuthentication',</span>
+<span class="cm">#   ], ← JWT auth is CSRF exempt by design</span>
+<span class="cm"># }</span></pre>
+  </div>
+
+  <div class="sh">AJAX patterns every developer must know</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-aj)">Pattern</div>
+      <div class="tc-title">Optimistic UI updates</div>
+      <div class="tc-body">Update the UI immediately before the API responds. If the API fails, roll back. Feels instant to the user.</div>
+      <div class="tc-secret">Twitter/X uses this for likes. Your heart turns red instantly — the API is still running. If it fails, it turns grey again. Implement this for any toggle/like action.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-aj)">Pattern</div>
+      <div class="tc-title">AbortController</div>
+      <div class="tc-body">Cancel in-flight requests when a new one supersedes them. Essential for search boxes, autocomplete, and filters.</div>
+      <div class="tc-secret">Without this, typing "react" fires 5 requests. If the "r" request responds last, you show wrong results. AbortController prevents this race condition.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-aj)">Pattern</div>
+      <div class="tc-title">Debouncing search</div>
+      <div class="tc-body">Wait 300ms after the user stops typing before firing the request. Reduces API calls from 10 to 1 per search.</div>
+      <div class="tc-secret">Combine debounce + AbortController for bulletproof search. Debounce reduces calls. AbortController handles the ones that slip through.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-aj)">Pattern</div>
+      <div class="tc-title">Pagination with AJAX</div>
+      <div class="tc-body">DRF returns <code>{"count":100,"next":"?page=2","results":[]}</code>. Load more button or infinite scroll. Never load all data at once.</div>
+      <div class="tc-secret">DRF's <code>PageNumberPagination</code> gives you <code>next</code> and <code>previous</code> URLs. Store the <code>next</code> URL and hit it when user scrolls to bottom.</div>
+    </div>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(4)">← Django REST</button>
+    <span class="ch-counter">6 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(5)">React — Complete Guide →</button>
+  </div>
+</div>
+
+<!-- ========== CH 6: REACT ========== -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 06</span><span class="ch-badge badge-intermediate">Intermediate → Advanced</span></div>
+    <h2 class="ch-title">React <span style="font-style:italic;color:var(--muted)">— Complete Guide</span></h2>
+    <p class="ch-desc">React is your frontend engine. You'll use it to build every UI that talks to your Django API.</p>
+  </div>
+
+  <div class="sh">React mental model</div>
+  <div class="callout c-secret"><span class="c-icon">🔑</span><span><strong>React's core idea:</strong> UI = f(state). Your interface is just a function of your data. When state changes, React re-renders the component. That's it. Everything else (hooks, context, useEffect) is building on this idea.</span></div>
+
+  <div class="sh">The hooks you must master</div>
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-re)">Hook</div>
+      <div class="tc-title">useState</div>
+      <div class="tc-body"><code>const [value, setValue] = useState(initial)</code>. Triggers re-render when set. The foundation of all interactivity.</div>
+      <div class="tc-secret">Never mutate state directly (<code>state.push()</code>). Always create a new value: <code>setItems([...items, newItem])</code>. Mutation doesn't trigger re-renders.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-re)">Hook</div>
+      <div class="tc-title">useEffect</div>
+      <div class="tc-body">Run side effects: fetch data, subscriptions, timers. Dependency array controls when it runs. Return a cleanup function.</div>
+      <div class="tc-secret">useEffect with <code>[]</code> runs once on mount (= fetch data on load). With <code>[id]</code> runs when id changes (= fetch new data when route changes). Missing deps = stale closures.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-re)">Hook</div>
+      <div class="tc-title">useContext</div>
+      <div class="tc-body">Share state across components without prop drilling. Create a context, provide it at the top, consume it anywhere below.</div>
+      <div class="tc-secret">Use context for: auth state (current user), theme, language. Don't use it for everything — it causes all consumers to re-render when the value changes.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-re)">Hook</div>
+      <div class="tc-title">useReducer</div>
+      <div class="tc-body">Like useState but for complex state logic. <code>dispatch({ type: 'INCREMENT' })</code> — a reducer function handles transitions.</div>
+      <div class="tc-secret">Use useReducer when you have 3+ related state values that change together, or when the next state depends on the previous. Forms with many fields are a perfect use case.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-re)">Hook</div>
+      <div class="tc-title">useMemo & useCallback</div>
+      <div class="tc-body">Memoize expensive calculations (useMemo) or function references (useCallback). Prevents unnecessary re-computation.</div>
+      <div class="tc-secret">Don't reach for these first. Profile with React DevTools Profiler. If a component re-renders 60+ times per second, then memoize. Premature optimization wastes time.</div>
+    </div>
+    <div class="topic-card">
+      <div class="tc-tag" style="color:var(--accent-re)">Hook</div>
+      <div class="tc-title">Custom hooks</div>
+      <div class="tc-body">Extract reusable stateful logic into functions starting with <code>use</code>. <code>useApi</code>, <code>useAuth</code>, <code>useLocalStorage</code>.</div>
+      <div class="tc-secret">Every time you copy-paste a useEffect+useState combo for fetching data, you should create a custom hook instead. This is how you build a maintainable codebase.</div>
+    </div>
+  </div>
+
+  <div class="sh">Custom hook — useApi (fetch data from DRF)</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">hooks/useApi.js</span><button class="code-copy" onclick="copyText(this,'use-api')">Copy</button></div>
+    <pre id="use-api"><span class="kw">import</span> { useState, useEffect, useCallback } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">export function</span> <span class="fn">useApi</span>(url, options = {}) {
+    <span class="kw">const</span> [data,    setData]    = <span class="fn">useState</span>(<span class="kw">null</span>);
+    <span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">true</span>);
+    <span class="kw">const</span> [error,   setError]   = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+    <span class="kw">const</span> fetchData = <span class="fn">useCallback</span>(<span class="kw">async</span> () => {
+        <span class="fn">setLoading</span>(<span class="kw">true</span>);
+        <span class="fn">setError</span>(<span class="kw">null</span>);
+        <span class="kw">try</span> {
+            <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url, {
+                headers: {
+                    <span class="str">'Authorization'</span>: <span class="str">`Bearer ${localStorage.getItem('token')}`</span>
+                }
+            });
+            <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> <span class="cls">Error</span>(<span class="str">`HTTP ${res.status}`</span>);
+            <span class="kw">const</span> json = <span class="kw">await</span> res.<span class="fn">json</span>();
+            <span class="fn">setData</span>(json);
+        } <span class="kw">catch</span> (e) {
+            <span class="fn">setError</span>(e.message);
+        } <span class="kw">finally</span> {
+            <span class="fn">setLoading</span>(<span class="kw">false</span>);
+        }
+    }, [url]);
+
+    <span class="fn">useEffect</span>(() => { <span class="fn">fetchData</span>(); }, [fetchData]);
+
+    <span class="kw">return</span> { data, loading, error, refetch: fetchData };
+}
+
+<span class="cm">// Usage in any component:</span>
+<span class="kw">function</span> <span class="fn">PostList</span>() {
+    <span class="kw">const</span> { data: posts, loading, error } = <span class="fn">useApi</span>(<span class="str">'/api/posts/'</span>);
+
+    <span class="kw">if</span> (loading) <span class="kw">return</span> &lt;<span class="cls">Spinner</span> /&gt;;
+    <span class="kw">if</span> (error)   <span class="kw">return</span> &lt;<span class="cls">Error</span> message={error} /&gt;;
+    <span class="kw">return</span> &lt;<span class="cls">PostGrid</span> posts={posts.results} /&gt;;
+}</pre>
+  </div>
+
+  <div class="sh">React Router — client-side navigation</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">App.jsx — routing setup</span><button class="code-copy" onclick="copyText(this,'react-router')">Copy</button></div>
+    <pre id="react-router"><span class="kw">import</span> { BrowserRouter, Routes, Route, Navigate } <span class="kw">from</span> <span class="str">'react-router-dom'</span>;
+<span class="kw">import</span> { useAuth } <span class="kw">from</span> <span class="str">'./hooks/useAuth'</span>;
+
+<span class="cm">// Protected route wrapper</span>
+<span class="kw">function</span> <span class="fn">ProtectedRoute</span>({ children }) {
+    <span class="kw">const</span> { user } = <span class="fn">useAuth</span>();
+    <span class="kw">return</span> user ? children : &lt;<span class="cls">Navigate</span> to=<span class="str">"/login"</span> replace /&gt;;
+}
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+    <span class="kw">return</span> (
+        &lt;<span class="cls">BrowserRouter</span>&gt;
+            &lt;<span class="cls">Routes</span>&gt;
+                &lt;<span class="cls">Route</span> path=<span class="str">"/"</span>        element={&lt;<span class="cls">Home</span> /&gt;} /&gt;
+                &lt;<span class="cls">Route</span> path=<span class="str">"/login"</span>   element={&lt;<span class="cls">Login</span> /&gt;} /&gt;
+                &lt;<span class="cls">Route</span> path=<span class="str">"/posts"</span>
+                    element={
+                        &lt;<span class="cls">ProtectedRoute</span>&gt;&lt;<span class="cls">PostList</span> /&gt;&lt;/<span class="cls">ProtectedRoute</span>&gt;
+                    }
+                /&gt;
+                &lt;<span class="cls">Route</span> path=<span class="str">"/posts/:id"</span> element={&lt;<span class="cls">PostDetail</span> /&gt;} /&gt;
+            &lt;/<span class="cls">Routes</span>&gt;
+        &lt;/<span class="cls">BrowserRouter</span>&gt;
+    );
+}</pre>
+  </div>
+
+  <div class="sh">Quiz — React fundamentals</div>
+  <div class="quiz">
+    <div class="quiz-q">What happens when you call <code>setState</code> with the same value that's already in state?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="qz(this,false,'q-react')">React always re-renders</button>
+      <button class="q-opt" onclick="qz(this,true,'q-react')">React bails out and skips the re-render (Object.is comparison)</button>
+      <button class="q-opt" onclick="qz(this,false,'q-react')">React throws an error</button>
+      <button class="q-opt" onclick="qz(this,false,'q-react')">React adds the value to a queue</button>
+    </div>
+    <div class="q-fb" id="q-react"></div>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(5)">← AJAX</button>
+    <span class="ch-counter">7 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(6)">Connecting the Stack →</button>
+  </div>
+</div>
+
+<!-- ========== CH 7: FULL STACK ========== -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 07</span><span class="ch-badge badge-advanced">Advanced</span></div>
+    <h2 class="ch-title">Connecting <span style="font-style:italic;color:var(--muted)">the Full Stack</span></h2>
+    <p class="ch-desc">This is where everything comes together. React on port 3000 talks to Django on port 8000. Authentication flows, CORS, deployment — the pieces that make it all work.</p>
+  </div>
+
+  <div class="sh">The full authentication flow</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">Login</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">React: POST /api/token/ with credentials</div>
+        <div class="tl-body">User submits login form. React sends <code>{"username":"ali","password":"pass"}</code> via AJAX to DRF's token endpoint.</div>
+        <div class="tl-pills"><span class="tl-pill">axios.post()</span><span class="tl-pill">fetch()</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Tokens received</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Django responds with access + refresh tokens</div>
+        <div class="tl-body">DRF returns <code>{"access":"eyJ...","refresh":"eyJ..."}</code>. Access token expires in 5 min. Refresh token expires in 7 days.</div>
+        <div class="tl-pills"><span class="tl-pill">access_token</span><span class="tl-pill">refresh_token</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Store tokens</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">React stores tokens securely</div>
+        <div class="tl-body">Store access token in memory (React state/context). Store refresh token in httpOnly cookie (more secure than localStorage).</div>
+        <div class="tl-pills"><span class="tl-pill">Context API</span><span class="tl-pill">httpOnly cookie</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">API calls</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Every request includes the access token</div>
+        <div class="tl-body"><code>Authorization: Bearer eyJ...</code> header on every fetch. DRF's JWTAuthentication verifies it and identifies the user.</div>
+        <div class="tl-pills"><span class="tl-pill">Authorization header</span><span class="tl-pill">Bearer token</span></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Token expired</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">React auto-refreshes using refresh token</div>
+        <div class="tl-body">If API returns 401, React automatically POSTs to <code>/api/token/refresh/</code> with the refresh token, gets a new access token, and retries the original request.</div>
+        <div class="tl-pills"><span class="tl-pill">Axios interceptor</span><span class="tl-pill">Token rotation</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh">CORS — making React + Django work together</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">settings.py — CORS configuration</span><button class="code-copy" onclick="copyText(this,'cors-cfg')">Copy</button></div>
+    <pre id="cors-cfg"><span class="cm"># pip install django-cors-headers</span>
+INSTALLED_APPS = [
+    ...
+    <span class="str">'corsheaders'</span>,
+]
+MIDDLEWARE = [
+    <span class="str">'corsheaders.middleware.CorsMiddleware'</span>,  <span class="cm"># must be FIRST</span>
+    <span class="str">'django.middleware.common.CommonMiddleware'</span>,
+    ...
+]
+
+<span class="cm"># Development: allow React dev server</span>
+CORS_ALLOWED_ORIGINS = [
+    <span class="str">"http://localhost:3000"</span>,
+    <span class="str">"http://localhost:5173"</span>,  <span class="cm"># Vite</span>
+]
+<span class="cm"># Production: your actual domain</span>
+<span class="cm"># CORS_ALLOWED_ORIGINS = ["https://myapp.com"]</span>
+
+<span class="cm"># Allow cookies (needed for httpOnly refresh token)</span>
+CORS_ALLOW_CREDENTIALS = <span class="kw">True</span>
+CORS_ALLOW_HEADERS = [
+    <span class="str">'content-type'</span>,
+    <span class="str">'authorization'</span>,
+    <span class="str">'x-csrftoken'</span>,
+]</pre>
+  </div>
+
+  <div class="sh">File upload — Django + React + AJAX</div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="code-file">FileUpload component</span><button class="code-copy" onclick="copyText(this,'upload-code')">Copy</button></div>
+    <pre id="upload-code"><span class="cm">// React component for file upload to DRF</span>
+<span class="kw">async function</span> <span class="fn">uploadFile</span>(file) {
+    <span class="kw">const</span> formData = <span class="kw">new</span> <span class="cls">FormData</span>();
+    formData.<span class="fn">append</span>(<span class="str">'file'</span>, file);
+    formData.<span class="fn">append</span>(<span class="str">'title'</span>, file.name);
+
+    <span class="cm">// NOTE: do NOT set Content-Type manually for FormData!</span>
+    <span class="cm">// Browser sets it automatically with the correct boundary</span>
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/uploads/'</span>, {
+        method: <span class="str">'POST'</span>,
+        headers: {
+            <span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span>
+            <span class="cm">// No Content-Type here — crucial!</span>
+        },
+        body: formData
+    });
+    <span class="kw">return</span> res.<span class="fn">json</span>();
+}</pre>
+  </div>
+
+  <div class="callout c-warn"><span class="c-icon">⚠️</span><span><strong>Common mistake:</strong> Setting <code>Content-Type: application/json</code> when sending FormData breaks file uploads. The browser must set Content-Type automatically so it can include the multipart boundary string. Remove the Content-Type header entirely for file uploads.</span></div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(6)">← React</button>
+    <span class="ch-counter">8 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="next(7)">Projects & Secrets →</button>
+  </div>
+</div>
+
+<!-- ========== CH 8: PROJECTS ========== -->
+<div class="chapter" id="ch8">
+  <div class="ch-header">
+    <div class="ch-meta"><span class="ch-num">Chapter 08</span><span class="ch-badge badge-expert">Expert Level</span></div>
+    <h2 class="ch-title">Projects, Secrets <span style="font-style:italic;color:var(--muted)">& Mastery</span></h2>
+    <p class="ch-desc">12 real projects to build. The secrets that separate junior developers from senior developers. And your complete roadmap to getting hired.</p>
+  </div>
+
+  <div class="sh">12 projects — ordered by difficulty</div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">Blog API + Frontend</div>
+      <div class="proj-difficulty diff-1">Beginner</div>
+    </div>
+    <div class="proj-desc">Full CRUD blog: Django models (Post, Category, Tag), DRF API endpoints, React frontend with list and detail views. The "Hello World" of your stack. Build this first — no shortcuts.</div>
+    <div class="proj-stack"><span class="proj-tag">Python</span><span class="proj-tag">Django ORM</span><span class="proj-tag">DRF ModelViewSet</span><span class="proj-tag">React useState</span><span class="proj-tag">fetch()</span><span class="proj-tag">MySQL</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">Auth System — Registration, Login, JWT</div>
+      <div class="proj-difficulty diff-1">Beginner</div>
+    </div>
+    <div class="proj-desc">Custom user model, registration endpoint with email validation, JWT login, protected routes in React, token refresh logic. This appears in literally every real app.</div>
+    <div class="proj-stack"><span class="proj-tag">Custom User model</span><span class="proj-tag">simplejwt</span><span class="proj-tag">React Context</span><span class="proj-tag">Protected Routes</span><span class="proj-tag">axios interceptors</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">Live Search with Debounce + Filters</div>
+      <div class="proj-difficulty diff-1">Beginner</div>
+    </div>
+    <div class="proj-desc">Product search page: DRF with django-filter, React with debounced search, filter by category/price/rating, URL-synced query params so searches are shareable.</div>
+    <div class="proj-stack"><span class="proj-tag">django-filter</span><span class="proj-tag">DRF SearchFilter</span><span class="proj-tag">debounce</span><span class="proj-tag">AbortController</span><span class="proj-tag">URLSearchParams</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">E-commerce Cart & Orders</div>
+      <div class="proj-difficulty diff-2">Intermediate</div>
+    </div>
+    <div class="proj-desc">Products, cart (ManyToMany), orders with status, inventory tracking with transactions. Optimistic UI for add-to-cart. Order total calculated server-side, not client-side (security).</div>
+    <div class="proj-stack"><span class="proj-tag">ManyToMany</span><span class="proj-tag">transaction.atomic()</span><span class="proj-tag">F() expressions</span><span class="proj-tag">Optimistic UI</span><span class="proj-tag">React useReducer</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">Dashboard with Charts & Pagination</div>
+      <div class="proj-difficulty diff-2">Intermediate</div>
+    </div>
+    <div class="proj-desc">Analytics dashboard: DRF aggregation queries (annotate, aggregate), Chart.js/Recharts in React, infinite scroll pagination, parallel data fetching with Promise.all.</div>
+    <div class="proj-stack"><span class="proj-tag">DRF aggregations</span><span class="proj-tag">annotate()</span><span class="proj-tag">Promise.all()</span><span class="proj-tag">Recharts</span><span class="proj-tag">Infinite scroll</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">File Upload System</div>
+      <div class="proj-difficulty diff-2">Intermediate</div>
+    </div>
+    <div class="proj-desc">Image/file uploads to Django, stored in media folder, served correctly. Drag-and-drop React UI, upload progress indicator with XHR, thumbnail generation with Pillow.</div>
+    <div class="proj-stack"><span class="proj-tag">Django FileField</span><span class="proj-tag">Pillow</span><span class="proj-tag">FormData</span><span class="proj-tag">XHR progress</span><span class="proj-tag">drag-and-drop</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">Real-time Notifications with Django Channels</div>
+      <div class="proj-difficulty diff-3">Advanced</div>
+    </div>
+    <div class="proj-desc">WebSocket notifications: Django Channels for real-time push, React useEffect for WebSocket client, Redis as channel layer. Notifications appear instantly without polling.</div>
+    <div class="proj-stack"><span class="proj-tag">django-channels</span><span class="proj-tag">WebSocket</span><span class="proj-tag">Redis</span><span class="proj-tag">useEffect cleanup</span><span class="proj-tag">useRef</span></div>
+  </div>
+
+  <div class="project">
+    <div class="proj-head">
+      <div class="proj-title">Multi-tenant SaaS App</div>
+      <div class="proj-difficulty diff-3">Advanced</div>
+    </div>
+    <div class="proj-desc">Organizations, memberships, role-based permissions, data isolation between tenants, subscription plans. The architecture used by Slack, Notion, and every B2B SaaS.</div>
+    <div class="proj-stack"><span class="proj-tag">Custom permissions</span><span class="proj-tag">Object-level permissions</span><span class="proj-tag">Role system</span><span class="proj-tag">Query filtering</span><span class="proj-tag">React TanStack Query</span></div>
+  </div>
+
+  <div class="sh">The secrets that make you a senior developer</div>
+  <div class="secrets-grid">
+    <div class="secret-card">
+      <div class="sc-icon">⚡</div>
+      <div class="sc-title">Use Django Debug Toolbar always</div>
+      <div class="sc-body">Install it in development. It shows every SQL query, how long each took, how many were duplicates. You'll find N+1 problems in minutes that would take hours to diagnose otherwise.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">🛡️</div>
+      <div class="sc-title">Never trust the client</div>
+      <div class="sc-body">Validate everything on the server. Price, totals, permissions — never compute these on the frontend and send the result. The API must re-validate every piece of business logic.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">📦</div>
+      <div class="sc-title">Use environment variables always</div>
+      <div class="sc-body">Secret key, database passwords, API keys — never hardcode them. Use python-dotenv + .env files. Add .env to .gitignore on day one. One leaked secret key can end a company.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">🔍</div>
+      <div class="sc-title">Read the source code</div>
+      <div class="sc-body">Django and DRF are open source. When something is confusing, read the actual source on GitHub. You'll understand it 10x better than any tutorial. This habit separates good from great developers.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">🧪</div>
+      <div class="sc-title">Write tests from the start</div>
+      <div class="sc-body">Django's test client + DRF's APIClient make API testing trivial. A test suite catches regressions automatically. Companies that don't test deploy broken code to production regularly.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">🎯</div>
+      <div class="sc-title">Learn to read error messages</div>
+      <div class="sc-body">Read the FULL traceback, bottom to top. The last few lines are usually where the actual error is. Google the exact error message + "Django" or "React". 90% of problems are already solved on Stack Overflow.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">🚀</div>
+      <div class="sc-title">Deploy early, deploy often</div>
+      <div class="sc-body">Deploy your first project within the first 2 months. The skills to deploy (Nginx, Gunicorn, environment config) are different from development skills. Learn them early.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">📚</div>
+      <div class="sc-title">The official docs are the best docs</div>
+      <div class="sc-body">Django's documentation is famously excellent. DRF's docs are thorough. React's beta docs are superb. Read them cover-to-cover once. You'll discover features no tutorial ever mentioned.</div>
+    </div>
+    <div class="secret-card">
+      <div class="sc-icon">💬</div>
+      <div class="sc-title">API design before API code</div>
+      <div class="sc-body">Design your API endpoints on paper first. What URLs? What HTTP methods? What request/response shapes? Changing an API after the frontend is built is expensive. Design first.</div>
+    </div>
+  </div>
+
+  <div class="sh">Your 6-month daily routine</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">Month 1–2</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Python + MySQL + Django basics</div>
+        <div class="tl-body">2 hours/day. Python fundamentals, SQL, Django models/views/templates. Build the Blog project without REST or React.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Month 3</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Django REST Framework</div>
+        <div class="tl-body">Serializers, ViewSets, JWT auth, permissions. Rebuild the Blog as a pure JSON API. Test every endpoint in Postman.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Month 4</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">React + AJAX fundamentals</div>
+        <div class="tl-body">Hooks, components, fetch(). Build the Blog frontend. Connect it to your Django API. Get the full stack working end-to-end for the first time.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Month 5</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Advanced patterns + E-commerce project</div>
+        <div class="tl-body">Auth system, file uploads, advanced queries, pagination. Build the E-commerce project from scratch.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Month 6</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-rule"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">Deploy, polish portfolio, job hunt</div>
+        <div class="tl-body">Deploy 2 projects publicly. Write README files. Push to GitHub. Apply for jobs. Your portfolio of real, deployed full-stack apps is your resume.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ch-nav">
+    <button class="cn-btn cn-btn-outline" onclick="go(7)">← Full Stack</button>
+    <span class="ch-counter">9 / 9</span>
+    <button class="cn-btn cn-btn-fill" onclick="go(0)">Back to overview ↑</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+let done = new Set();
+const total = 9;
+
+function go(idx) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('visible'));
+  document.getElementById('ch' + idx).classList.add('visible');
+  document.querySelectorAll('.sb-item').forEach((n,i) => n.classList.toggle('active', i === idx));
+  document.getElementById('mainEl').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function next(cur) {
+  done.add(cur);
+  const items = document.querySelectorAll('.sb-item');
+  items[cur].classList.add('done');
+  items[cur].classList.remove('active');
+  updateProgress();
+  go(cur + 1);
+}
+
+function updateProgress() {
+  const pct = Math.round((done.size / total) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+}
+
+function qz(btn, correct, id) {
+  const opts = btn.parentElement.querySelectorAll('.q-opt');
+  opts.forEach(o => o.disabled = true);
+  const fb = document.getElementById(id);
+  if (correct) {
+    btn.classList.add('correct');
+    fb.textContent = 'Correct! Great understanding.';
+    fb.className = 'q-fb show ok';
+  } else {
+    btn.classList.add('wrong');
+    opts.forEach(o => { if (o.onclick && o.onclick.toString().includes('true')) o.classList.add('correct'); });
+    fb.textContent = 'Not quite. Study the highlighted answer.';
+    fb.className = 'q-fb show no';
+  }
+}
+
+function copyText(btn, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

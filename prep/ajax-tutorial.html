@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJAX — Complete Tutorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.15);
+    --accent: #6ee7b7;
+    --accent2: #818cf8;
+    --accent3: #f472b6;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --text: #e8e8f0;
+    --text-muted: #7c7c9a;
+    --text-dim: #4a4a62;
+    --code-bg: #0d0d14;
+    --tag-js: rgba(110,231,183,0.12);
+    --tag-js-text: #6ee7b7;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+  /* LAYOUT */
+  .shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo .logo-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: .15em;
+    margin-bottom: 6px;
+    display: block;
+    text-transform: uppercase;
+  }
+  .sidebar-logo h1 {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .sidebar-progress {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .sidebar-nav {
+    padding: 12px 0;
+    flex: 1;
+  }
+
+  .nav-section {
+    padding: 8px 24px 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+    border-left: 2px solid transparent;
+    line-height: 1.4;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(110,231,183,0.05); }
+  .nav-item.done .nav-check { opacity: 1; }
+  .nav-check {
+    width: 14px; height: 14px; min-width: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .2s;
+    font-size: 8px;
+    color: #000;
+  }
+  .nav-num {
+    width: 18px; height: 18px; min-width: 18px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+  }
+  .nav-item.active .nav-num {
+    background: rgba(110,231,183,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    overflow-y: auto;
+    height: 100vh;
+    scroll-behavior: smooth;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 64px 60px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(110,231,183,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+  .hero h2 {
+    font-family: var(--font-head);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .hero h2 span { color: var(--accent); }
+  .hero-desc {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .hero-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    border: 1px solid;
+  }
+  .tag-green { background: rgba(110,231,183,0.08); border-color: rgba(110,231,183,0.25); color: var(--accent); }
+  .tag-purple { background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.25); color: var(--accent2); }
+  .tag-pink { background: rgba(244,114,182,0.08); border-color: rgba(244,114,182,0.25); color: var(--accent3); }
+  .tag-yellow { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.25); color: var(--warn); }
+
+  /* CHAPTERS */
+  .chapter {
+    display: none;
+    padding: 56px 64px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn .3s ease;
+  }
+  .chapter.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .chapter-header {
+    margin-bottom: 40px;
+  }
+  .chapter-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+  }
+  .chapter-title {
+    font-family: var(--font-head);
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .chapter-title span { color: var(--accent); }
+  .chapter-desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  /* SECTION DIVIDERS */
+  .section-head {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .15em;
+    color: var(--text-dim);
+    margin: 36px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CONCEPT CARDS */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--border-bright); }
+  .card-title {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .card-body { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+
+  .card-accent-green { border-left: 3px solid var(--accent); }
+  .card-accent-purple { border-left: 3px solid var(--accent2); }
+  .card-accent-pink { border-left: 3px solid var(--accent3); }
+  .card-accent-yellow { border-left: 3px solid var(--warn); }
+  .card-accent-red { border-left: 3px solid var(--danger); }
+
+  /* ANALOGY BOX */
+  .analogy {
+    background: rgba(129,140,248,0.06);
+    border: 1px solid rgba(129,140,248,0.2);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 16px 0;
+  }
+  .analogy-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 8px;
+  }
+  .analogy p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+  .analogy strong { color: var(--text); }
+
+  /* TIP / WARNING / INFO BOXES */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.65;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 14px; min-width: 18px; margin-top: 1px; }
+  .callout-tip { background: rgba(110,231,183,0.06); border: 1px solid rgba(110,231,183,0.18); color: #a7f3d0; }
+  .callout-warn { background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.18); color: #fde68a; }
+  .callout-danger { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.18); color: #fca5a5; }
+  .callout-info { background: rgba(129,140,248,0.06); border: 1px solid rgba(129,140,248,0.18); color: #a5b4fc; }
+
+  /* FLOW STEPS */
+  .flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+  .flow-item {
+    display: flex;
+    gap: 16px;
+    padding-bottom: 20px;
+    position: relative;
+  }
+  .flow-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 14px; top: 30px;
+    width: 1px; bottom: 0;
+    background: var(--border);
+  }
+  .flow-bubble {
+    width: 28px; height: 28px; min-width: 28px;
+    border-radius: 50%;
+    background: rgba(110,231,183,0.12);
+    border: 1px solid rgba(110,231,183,0.3);
+    color: var(--accent);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .flow-content { padding-top: 4px; }
+  .flow-content strong { font-weight: 500; color: var(--text); font-size: 14px; display: block; margin-bottom: 3px; }
+  .flow-content span { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* CODE BLOCKS */
+  .code-wrap {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 16px 0;
+    font-family: var(--font-mono);
+  }
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  .code-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: .05em;
+  }
+  .code-actions { display: flex; gap: 8px; align-items: center; }
+  .btn-run, .btn-copy {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-bright);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    transition: all .15s;
+  }
+  .btn-run {
+    background: rgba(110,231,183,0.12);
+    color: var(--accent);
+    border-color: rgba(110,231,183,0.25);
+  }
+  .btn-run:hover { background: rgba(110,231,183,0.22); }
+  .btn-copy {
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .btn-copy:hover { color: var(--text-muted); background: rgba(255,255,255,0.04); }
+  pre {
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    color: var(--text);
+    tab-size: 2;
+  }
+  pre .kw { color: #c792ea; }
+  pre .fn { color: #82aaff; }
+  pre .str { color: #c3e88d; }
+  pre .cm { color: #546e7a; font-style: italic; }
+  pre .num { color: var(--accent); }
+  pre .prop { color: #f07178; }
+  pre .obj { color: #ffcb6b; }
+  .code-output {
+    border-top: 1px solid var(--border);
+    padding: 12px 20px;
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--text-muted);
+    display: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .code-output.show { display: block; }
+  .code-output.ok { color: var(--accent); }
+  .code-output.err { color: var(--danger); }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .compare-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .compare-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .compare-table td:first-child { color: var(--text); font-weight: 500; }
+  .compare-table td .good { color: var(--accent); }
+  .compare-table td .bad { color: var(--danger); }
+
+  /* LIVE PLAYGROUND */
+  .playground {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .playground-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(110,231,183,0.03);
+  }
+  .playground-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pg-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .playground-body { padding: 20px; }
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  input[type="text"], select, textarea {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus { border-color: var(--border-bright); }
+  input[type="text"] { flex: 1; min-width: 200px; }
+  select { background: var(--code-bg); cursor: pointer; }
+  textarea { width: 100%; min-height: 80px; resize: vertical; }
+  .btn-primary {
+    background: rgba(110,231,183,0.12);
+    border: 1px solid rgba(110,231,183,0.3);
+    color: var(--accent);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: rgba(110,231,183,0.22); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+  .result-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    min-height: 80px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.7;
+  }
+  .result-box.loading { color: var(--text-dim); font-style: italic; }
+  .result-box.success { color: var(--accent); }
+  .result-box.error-state { color: var(--danger); }
+
+  /* STATUS BADGE */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+  .status-2xx { background: rgba(110,231,183,0.1); color: var(--accent); border: 1px solid rgba(110,231,183,0.2); }
+  .status-4xx { background: rgba(251,191,36,0.1); color: var(--warn); border: 1px solid rgba(251,191,36,0.2); }
+  .status-5xx { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot-green { background: var(--accent); }
+  .dot-yellow { background: var(--warn); }
+  .dot-red { background: var(--danger); }
+
+  /* HTTP STATUS TABLE */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .status-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .status-code {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .status-200 { color: var(--accent); }
+  .status-400 { color: var(--warn); }
+  .status-500 { color: var(--danger); }
+  .status-name { font-size: 12px; color: var(--text); font-weight: 500; margin-bottom: 3px; }
+  .status-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+  /* CHAPTER NAV */
+  .chapter-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 64px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  .nav-btn-ch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .nav-btn-ch:hover { border-color: var(--border-bright); color: var(--text); }
+  .nav-btn-ch.primary {
+    background: rgba(110,231,183,0.1);
+    border-color: rgba(110,231,183,0.3);
+    color: var(--accent);
+  }
+  .nav-btn-ch.primary:hover { background: rgba(110,231,183,0.18); }
+  .nav-btn-ch:disabled { opacity: .3; cursor: default; }
+  .chapter-count { font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
+
+  /* QUIZ */
+  .quiz-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin: 20px 0;
+  }
+  .quiz-q {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .quiz-q span { color: var(--accent); }
+  .quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+    font-family: var(--font-body);
+    line-height: 1.4;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--border-bright); color: var(--text); }
+  .quiz-opt.correct { background: rgba(110,231,183,0.08); border-color: rgba(110,231,183,0.4); color: var(--accent); }
+  .quiz-opt.wrong { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.3); color: var(--danger); }
+  .quiz-feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: none;
+    line-height: 1.6;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(110,231,183,0.06); border: 1px solid rgba(110,231,183,0.2); color: #a7f3d0; }
+  .quiz-feedback.no { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.2); color: #fca5a5; }
+
+  /* CHEATSHEET */
+  .cheatsheet {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  .cheatsheet-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .cheatsheet-row:last-child { border-bottom: none; }
+  .cs-key {
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.02);
+    border-right: 1px solid var(--border);
+    font-family: var(--font-mono);
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+  }
+  .cs-val {
+    padding: 10px 16px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    line-height: 1.5;
+  }
+
+  /* TWO-COLUMN */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+  /* INLINE CODE */
+  code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* HORIZONTAL RULE */
+  hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  p { margin: 10px 0; }
+  strong { color: var(--text); font-weight: 500; }
+
+  /* FINAL PROJECTS */
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    transition: border-color .2s;
+  }
+  .project-card:hover { border-color: var(--border-bright); }
+  .project-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .project-title {
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .project-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; margin-bottom: 12px; }
+  .project-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .project-skill {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(110,231,183,0.08);
+    border: 1px solid rgba(110,231,183,0.18);
+    color: var(--accent);
+  }
+
+  /* Completed stamp */
+  .complete-banner {
+    display: none;
+    background: rgba(110,231,183,0.06);
+    border: 1px solid rgba(110,231,183,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 24px 64px;
+    font-size: 14px;
+    color: #a7f3d0;
+    text-align: center;
+  }
+  .complete-banner.show { display: block; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; }
+    .hero, .chapter, .chapter-nav { padding-left: 24px; padding-right: 24px; }
+    .two-col { grid-template-columns: 1fr; }
+    .compare-table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-tag">Complete Course</span>
+      <h1>AJAX<br>Mastery</h1>
+    </div>
+    <div class="sidebar-progress">
+      <div class="progress-label">Your progress</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0 of 9 chapters</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Foundations</div>
+      <div class="nav-item active" onclick="goTo(0)"><div class="nav-num">1</div>What is AJAX?<div class="nav-check">✓</div></div>
+      <div class="nav-item" onclick="goTo(1)"><div class="nav-num">2</div>How AJAX works<div class="nav-check">✓</div></div>
+      <div class="nav-item" onclick="goTo(2)"><div class="nav-num">3</div>HTTP & JSON<div class="nav-check">✓</div></div>
+
+      <div class="nav-section">Core APIs</div>
+      <div class="nav-item" onclick="goTo(3)"><div class="nav-num">4</div>XMLHttpRequest<div class="nav-check">✓</div></div>
+      <div class="nav-item" onclick="goTo(4)"><div class="nav-num">5</div>fetch() API<div class="nav-check">✓</div></div>
+      <div class="nav-item" onclick="goTo(5)"><div class="nav-num">6</div>async / await<div class="nav-check">✓</div></div>
+
+      <div class="nav-section">Advanced</div>
+      <div class="nav-item" onclick="goTo(6)"><div class="nav-num">7</div>Error handling<div class="nav-check">✓</div></div>
+      <div class="nav-item" onclick="goTo(7)"><div class="nav-num">8</div>Real patterns<div class="nav-check">✓</div></div>
+
+      <div class="nav-section">Finish</div>
+      <div class="nav-item" onclick="goTo(8)"><div class="nav-num">9</div>Projects & next steps<div class="nav-check">✓</div></div>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainArea">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">Full tutorial — zero to advanced</div>
+      <h2>Learn <span>AJAX</span> from<br>scratch to mastery</h2>
+      <p class="hero-desc">A complete hands-on course. Every concept explained with real analogies, working code examples you can run, and live playgrounds to experiment in.</p>
+      <div class="hero-tags">
+        <span class="tag tag-green">9 chapters</span>
+        <span class="tag tag-purple">Live code demos</span>
+        <span class="tag tag-pink">Interactive playgrounds</span>
+        <span class="tag tag-yellow">Quizzes</span>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 1 ==================== -->
+    <div class="chapter visible" id="ch0">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 01 — Foundations</div>
+        <h2 class="chapter-title">What is <span>AJAX</span>?</h2>
+        <p class="chapter-desc">Understand the big idea — the problem AJAX solves and why every modern website uses it.</p>
+      </div>
+
+      <div class="section-head">The problem before AJAX</div>
+      <p style="color:var(--text-muted)">Imagine you're on an e-commerce site in the early 2000s. You click "Add to cart". The <strong>entire page reloads</strong> — all the HTML, CSS, images, everything downloads again. Just to update one tiny cart icon. That was the web before AJAX.</p>
+
+      <div class="analogy">
+        <div class="analogy-label">Real-world analogy</div>
+        <p><strong>Old web (no AJAX):</strong> Every time you want the bill at a restaurant, they destroy the whole restaurant, rebuild it from scratch, and hand you the bill. <br><br><strong>Web with AJAX:</strong> The waiter quietly walks to the kitchen, gets just the bill, and brings it to your table. You never had to move.</p>
+      </div>
+
+      <div class="section-head">What AJAX stands for</div>
+      <div class="cards">
+        <div class="card card-accent-green"><div class="card-title">A — Asynchronous</div><div class="card-body">Happens in the background. Doesn't freeze or block the page. User can keep clicking, scrolling, typing.</div></div>
+        <div class="card card-accent-purple"><div class="card-title">J — JavaScript</div><div class="card-body">The programming language that makes the request happen, processes the response, and updates the page.</div></div>
+        <div class="card card-accent-pink"><div class="card-title">A — And</div><div class="card-body">Just a conjunction in the name.</div></div>
+        <div class="card card-accent-yellow"><div class="card-title">X — XML (now JSON)</div><div class="card-body">Originally used XML for data. Today virtually all APIs use JSON instead. The name is historical.</div></div>
+      </div>
+
+      <div class="section-head">AJAX in the wild — sites you use every day</div>
+      <div class="cards">
+        <div class="card"><div class="card-title">Google Search autocomplete</div><div class="card-body">Every keystroke fires an AJAX request. Results appear instantly without any page reload.</div></div>
+        <div class="card"><div class="card-title">Instagram / Twitter feed</div><div class="card-body">Infinite scroll loads more posts via AJAX as you scroll — silently, in the background.</div></div>
+        <div class="card"><div class="card-title">Form validation</div><div class="card-body">"Email already taken" — checked live via AJAX before you even click submit.</div></div>
+        <div class="card"><div class="card-title">Gmail / Outlook</div><div class="card-body">New emails appear without refreshing. Sending mail, starring, archiving — all AJAX.</div></div>
+      </div>
+
+      <div class="section-head">AJAX vs. Full page reload — side by side</div>
+      <table class="compare-table" style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <tr><th>Aspect</th><th>Full page reload</th><th>AJAX</th></tr>
+        <tr><td>Data transferred</td><td class="bad">Entire HTML page (100KB+)</td><td class="good">Just the needed data (1-5KB)</td></tr>
+        <tr><td>User experience</td><td class="bad">Page flickers, scroll resets</td><td class="good">Seamless, no interruption</td></tr>
+        <tr><td>Speed</td><td class="bad">Slow (rebuild everything)</td><td class="good">Fast (update only what changed)</td></tr>
+        <tr><td>Server load</td><td class="bad">High (full page every time)</td><td class="good">Low (small data responses)</td></tr>
+      </table>
+
+      <div class="section-head">Quick quiz</div>
+      <div class="quiz-box">
+        <div class="quiz-q">Why was AJAX invented? <span>(pick the best answer)</span></div>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quiz(this,false,'ch0q')">To make JavaScript run faster on the server</button>
+          <button class="quiz-opt" onclick="quiz(this,true,'ch0q')">To update parts of a page without reloading the whole thing</button>
+          <button class="quiz-opt" onclick="quiz(this,false,'ch0q')">To replace HTML with XML for better structure</button>
+          <button class="quiz-opt" onclick="quiz(this,false,'ch0q')">To allow websites to work offline</button>
+        </div>
+        <div class="quiz-feedback" id="ch0q"></div>
+      </div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" disabled>← Previous</button>
+        <span class="chapter-count">1 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(0)">How AJAX works →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 2 ==================== -->
+    <div class="chapter" id="ch1">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 02 — Foundations</div>
+        <h2 class="chapter-title">How AJAX <span>works</span></h2>
+        <p class="chapter-desc">The full lifecycle of an AJAX request — from user action to DOM update. Plus: what "asynchronous" actually means.</p>
+      </div>
+
+      <div class="section-head">The 4-step lifecycle</div>
+      <div class="flow">
+        <div class="flow-item"><div class="flow-bubble">1</div><div class="flow-content"><strong>User triggers an event</strong><span>A click, keypress, scroll, timer, form submit — anything that starts the process.</span></div></div>
+        <div class="flow-item"><div class="flow-bubble">2</div><div class="flow-content"><strong>JavaScript sends an HTTP request</strong><span>Using XHR or fetch(), JS sends a request to a server URL. This happens <em>in the background</em> — the page doesn't freeze.</span></div></div>
+        <div class="flow-item"><div class="flow-bubble">3</div><div class="flow-content"><strong>Server processes and responds</strong><span>The server runs logic (queries a database, etc.) and sends back data — usually as JSON text.</span></div></div>
+        <div class="flow-item"><div class="flow-bubble">4</div><div class="flow-content"><strong>JavaScript updates the DOM</strong><span>Your callback/promise fires. You parse the response and update only the part of the page that needs to change.</span></div></div>
+      </div>
+
+      <div class="section-head">What does "asynchronous" really mean?</div>
+      <div class="two-col">
+        <div class="card card-accent-red">
+          <div class="card-title">Synchronous (blocking)</div>
+          <div class="card-body">Code runs line by line. Line 2 cannot run until line 1 finishes. If line 1 is "wait 3 seconds for network", the whole page freezes for 3 seconds. That's a terrible experience.</div>
+        </div>
+        <div class="card card-accent-green">
+          <div class="card-title">Asynchronous (non-blocking)</div>
+          <div class="card-body">Line 1 fires a request and immediately moves on. The page stays responsive. When the server responds — 200ms later — a callback or promise picks up the result and continues.</div>
+        </div>
+      </div>
+
+      <div class="analogy">
+        <div class="analogy-label">Analogy — ordering at a restaurant</div>
+        <p><strong>Synchronous:</strong> You give your order and stand frozen at the counter until the food is ready. No one else can order. You don't move. Everything stops.<br><br>
+        <strong>Asynchronous:</strong> You give your order and go sit down. The waiter takes other orders. Your phone can ring. When the food is ready, the waiter brings it to you. Nothing blocked.</p>
+      </div>
+
+      <div class="section-head">JavaScript's event loop — the engine behind async</div>
+      <p style="color:var(--text-muted)">JavaScript runs on a <strong>single thread</strong> — it can only do one thing at a time. Yet it handles many async operations simultaneously. How? The <strong>event loop</strong>.</p>
+      <div class="flow" style="margin-top:16px">
+        <div class="flow-item"><div class="flow-bubble">→</div><div class="flow-content"><strong>Call Stack</strong><span>Where your synchronous code runs. One operation at a time.</span></div></div>
+        <div class="flow-item"><div class="flow-bubble">→</div><div class="flow-content"><strong>Web APIs</strong><span>Browser handles async work (network requests, timers). JS doesn't wait — it delegates and moves on.</span></div></div>
+        <div class="flow-item"><div class="flow-bubble">→</div><div class="flow-content"><strong>Callback Queue</strong><span>When async work finishes, the callback is placed here, waiting.</span></div></div>
+        <div class="flow-item"><div class="flow-bubble">→</div><div class="flow-content"><strong>Event Loop</strong><span>Checks: is the call stack empty? If yes, push the next callback from the queue onto the stack to run.</span></div></div>
+      </div>
+
+      <div class="callout callout-tip"><span class="callout-icon">💡</span><span>Key insight: Your AJAX callback doesn't interrupt whatever JS is running. It patiently waits in the queue and runs when the stack is clear. This is why JS can seem to do many things "at once" on a single thread.</span></div>
+
+      <div class="section-head">HTTP methods you'll use in AJAX</div>
+      <div class="cards">
+        <div class="card card-accent-green"><div class="card-title">GET</div><div class="card-body">Fetch / read data. "Give me the list of products." No body. Data goes in the URL. Most common.</div></div>
+        <div class="card card-accent-purple"><div class="card-title">POST</div><div class="card-body">Create new data. "Save this new user." Sends data in request body as JSON.</div></div>
+        <div class="card card-accent-yellow"><div class="card-title">PUT / PATCH</div><div class="card-body">Update existing data. PUT = replace whole resource. PATCH = update only specific fields.</div></div>
+        <div class="card card-accent-red"><div class="card-title">DELETE</div><div class="card-body">Remove a resource. "Delete product with ID 42." Usually no body.</div></div>
+      </div>
+
+      <div class="quiz-box">
+        <div class="quiz-q">A user clicks a "Like" button. The like count updates instantly without any page flicker. Which step does the browser do LAST?</div>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quiz(this,false,'ch1q')">Sends an HTTP request to the server</button>
+          <button class="quiz-opt" onclick="quiz(this,false,'ch1q')">User clicks the button</button>
+          <button class="quiz-opt" onclick="quiz(this,true,'ch1q')">JavaScript updates the like count on screen (DOM update)</button>
+          <button class="quiz-opt" onclick="quiz(this,false,'ch1q')">Server processes the request</button>
+        </div>
+        <div class="quiz-feedback" id="ch1q"></div>
+      </div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(0)">← What is AJAX?</button>
+        <span class="chapter-count">2 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(1)">HTTP & JSON →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 3 ==================== -->
+    <div class="chapter" id="ch2">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 03 — Foundations</div>
+        <h2 class="chapter-title">HTTP & <span>JSON</span></h2>
+        <p class="chapter-desc">The two languages AJAX speaks: HTTP for communication, JSON for data. Master these and APIs become easy.</p>
+      </div>
+
+      <div class="section-head">HTTP status codes — what the server is saying</div>
+      <p style="color:var(--text-muted)">Every AJAX response includes a <strong>status code</strong>. Your code needs to check this to know if the request succeeded or failed.</p>
+      <div class="status-grid">
+        <div class="status-item"><div class="status-code status-200">200</div><div class="status-name">OK</div><div class="status-desc">Request succeeded. Data is in the response body.</div></div>
+        <div class="status-item"><div class="status-code status-200">201</div><div class="status-name">Created</div><div class="status-desc">POST succeeded. New resource was created.</div></div>
+        <div class="status-item"><div class="status-code status-200">204</div><div class="status-name">No Content</div><div class="status-desc">Success, but no data returned (common for DELETE).</div></div>
+        <div class="status-item"><div class="status-code status-400">400</div><div class="status-name">Bad Request</div><div class="status-desc">You sent invalid/malformed data. Fix your request.</div></div>
+        <div class="status-item"><div class="status-code status-400">401</div><div class="status-name">Unauthorized</div><div class="status-desc">Need to log in / provide auth token first.</div></div>
+        <div class="status-item"><div class="status-code status-400">403</div><div class="status-name">Forbidden</div><div class="status-desc">Logged in but don't have permission.</div></div>
+        <div class="status-item"><div class="status-code status-400">404</div><div class="status-name">Not Found</div><div class="status-desc">That URL or resource doesn't exist.</div></div>
+        <div class="status-item"><div class="status-code status-400">429</div><div class="status-name">Too Many Requests</div><div class="status-desc">You're being rate limited. Slow down!</div></div>
+        <div class="status-item"><div class="status-code status-500">500</div><div class="status-name">Server Error</div><div class="status-desc">Something broke on the server side. Not your fault.</div></div>
+        <div class="status-item"><div class="status-code status-500">503</div><div class="status-name">Service Unavailable</div><div class="status-desc">Server is down/overloaded. Try again later.</div></div>
+      </div>
+
+      <div class="callout callout-warn"><span class="callout-icon">⚠️</span><span><strong>Critical:</strong> fetch() does NOT throw an error for 4xx/5xx responses. It only rejects for network failures. You must manually check <code>response.ok</code> or <code>response.status</code>. This trips up almost every beginner.</span></div>
+
+      <div class="section-head">JSON — the universal data format</div>
+      <p style="color:var(--text-muted)">JSON (JavaScript Object Notation) is plain text that looks like a JavaScript object. Every modern API returns JSON. You need two methods to work with it:</p>
+
+      <div class="two-col">
+        <div class="card card-accent-green">
+          <div class="card-title">JSON.parse(string)</div>
+          <div class="card-body">Converts a JSON <em>string</em> (what the server sends) into a real JavaScript object. Use after receiving a response.</div>
+        </div>
+        <div class="card card-accent-purple">
+          <div class="card-title">JSON.stringify(object)</div>
+          <div class="card-body">Converts a JavaScript object into a JSON <em>string</em>. Use before sending data to a server in a request body.</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">json-basics.js</span><div class="code-actions"><button class="btn-run" onclick="runCode('json-demo','json-out')">▶ Run</button><button class="btn-copy" onclick="copyCode('json-demo')">Copy</button></div></div>
+        <pre id="json-demo"><span class="cm">// Server sends this as plain text (a JSON string)</span>
+<span class="kw">const</span> serverResponse = <span class="str">'{"id":1,"name":"Priya","city":"Chennai","active":true}'</span>;
+
+<span class="cm">// Step 1: Parse the string into a real JS object</span>
+<span class="kw">const</span> user = JSON.<span class="fn">parse</span>(serverResponse);
+console.<span class="fn">log</span>(user.name);    <span class="cm">// Priya</span>
+console.<span class="fn">log</span>(user.city);    <span class="cm">// Chennai</span>
+console.<span class="fn">log</span>(user.active);  <span class="cm">// true</span>
+console.<span class="fn">log</span>(<span class="kw">typeof</span> user);  <span class="cm">// object</span>
+
+<span class="cm">// Step 2: Convert JS object to string (for sending to server)</span>
+<span class="kw">const</span> newUser = { name: <span class="str">"Arjun"</span>, age: <span class="num">24</span>, skills: [<span class="str">"JS"</span>, <span class="str">"CSS"</span>] };
+<span class="kw">const</span> jsonString = JSON.<span class="fn">stringify</span>(newUser);
+console.<span class="fn">log</span>(jsonString);
+console.<span class="fn">log</span>(<span class="kw">typeof</span> jsonString); <span class="cm">// string</span></pre>
+        <div class="code-output" id="json-out"></div>
+      </div>
+
+      <div class="section-head">What JSON looks like</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">example-api-response.json</span></div>
+        <pre>{
+  <span class="prop">"id"</span>: <span class="num">42</span>,
+  <span class="prop">"name"</span>: <span class="str">"Priya Sharma"</span>,
+  <span class="prop">"email"</span>: <span class="str">"priya@example.com"</span>,
+  <span class="prop">"active"</span>: <span class="kw">true</span>,
+  <span class="prop">"scores"</span>: [<span class="num">95</span>, <span class="num">87</span>, <span class="num">91</span>],
+  <span class="prop">"address"</span>: {
+    <span class="prop">"city"</span>: <span class="str">"Chennai"</span>,
+    <span class="prop">"zip"</span>: <span class="str">"600001"</span>
+  }
+}</pre>
+      </div>
+
+      <div class="callout callout-info"><span class="callout-icon">ℹ️</span><span>JSON rules: Keys must be in double quotes. No trailing commas. No comments. Values can be string, number, boolean, null, array, or object.</span></div>
+
+      <div class="section-head">CORS — why your request might be blocked</div>
+      <div class="card card-accent-red" style="margin:16px 0">
+        <div class="card-title">What is CORS?</div>
+        <div class="card-body">Cross-Origin Resource Sharing. Browsers block requests from <code>site-a.com</code> to <code>api.site-b.com</code> unless the API server explicitly allows it. This is a browser security feature, not a JavaScript feature.</div>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="card-title">You see this error</div><div class="card-body" style="font-family:var(--font-mono);font-size:11px;color:var(--danger)">Access to fetch at 'https://api.example.com' from origin 'http://localhost:3000' has been blocked by CORS policy</div></div>
+        <div class="card"><div class="card-title">How to fix it</div><div class="card-body">If you own the API: add <code>Access-Control-Allow-Origin</code> headers. If not: proxy via your own backend, or use a CORS-friendly API.</div></div>
+      </div>
+      <div class="callout callout-warn"><span class="callout-icon">⚠️</span><span>CORS is enforced by the browser only. Postman, curl, and Node.js never get CORS errors. That's why requests work in Postman but fail in your browser.</span></div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(1)">← How AJAX works</button>
+        <span class="chapter-count">3 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(2)">XMLHttpRequest →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 4 ==================== -->
+    <div class="chapter" id="ch3">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 04 — Core APIs</div>
+        <h2 class="chapter-title"><span>XMLHttpRequest</span></h2>
+        <p class="chapter-desc">The original AJAX API. Verbose but foundational. Understanding XHR makes everything else click.</p>
+      </div>
+
+      <div class="callout callout-info"><span class="callout-icon">ℹ️</span><span>XHR was introduced in 2000. Modern code uses fetch() instead, but XHR is everywhere in existing codebases. You must understand it.</span></div>
+
+      <div class="section-head">XHR GET request — step by step</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">xhr-get.js</span><div class="code-actions"><button class="btn-run" onclick="runXHR()">▶ Run</button><button class="btn-copy" onclick="copyCode('xhr-get-code')">Copy</button></div></div>
+        <pre id="xhr-get-code"><span class="cm">// Step 1: Create an XHR object</span>
+<span class="kw">const</span> xhr = <span class="kw">new</span> <span class="obj">XMLHttpRequest</span>();
+
+<span class="cm">// Step 2: Configure — method and URL</span>
+xhr.<span class="fn">open</span>(<span class="str">'GET'</span>, <span class="str">'https://jsonplaceholder.typicode.com/users/1'</span>);
+
+<span class="cm">// Step 3: Define what to do when response arrives</span>
+xhr.<span class="prop">onload</span> = <span class="kw">function</span>() {
+  <span class="kw">if</span> (xhr.<span class="prop">status</span> === <span class="num">200</span>) {
+    <span class="kw">const</span> user = JSON.<span class="fn">parse</span>(xhr.<span class="prop">responseText</span>);
+    console.<span class="fn">log</span>(<span class="str">'Name:'</span>, user.<span class="prop">name</span>);
+    console.<span class="fn">log</span>(<span class="str">'Email:'</span>, user.<span class="prop">email</span>);
+    console.<span class="fn">log</span>(<span class="str">'City:'</span>, user.<span class="prop">address</span>.<span class="prop">city</span>);
+  } <span class="kw">else</span> {
+    console.<span class="fn">log</span>(<span class="str">'Error: status'</span>, xhr.<span class="prop">status</span>);
+  }
+};
+
+<span class="cm">// Step 4: Handle network errors</span>
+xhr.<span class="prop">onerror</span> = <span class="kw">function</span>() {
+  console.<span class="fn">log</span>(<span class="str">'Network error!'</span>);
+};
+
+<span class="cm">// Step 5: Send the request</span>
+xhr.<span class="fn">send</span>();</pre>
+        <div class="code-output" id="xhr-get-out"></div>
+      </div>
+
+      <div class="section-head">XHR POST — sending data</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">xhr-post.js</span><div class="code-actions"><button class="btn-run" onclick="runXHRPost()">▶ Run</button><button class="btn-copy" onclick="copyCode('xhr-post-code')">Copy</button></div></div>
+        <pre id="xhr-post-code"><span class="kw">const</span> xhr = <span class="kw">new</span> <span class="obj">XMLHttpRequest</span>();
+xhr.<span class="fn">open</span>(<span class="str">'POST'</span>, <span class="str">'https://jsonplaceholder.typicode.com/posts'</span>);
+
+<span class="cm">// IMPORTANT: tell server you're sending JSON</span>
+xhr.<span class="fn">setRequestHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'application/json'</span>);
+
+xhr.<span class="prop">onload</span> = <span class="kw">function</span>() {
+  <span class="kw">const</span> result = JSON.<span class="fn">parse</span>(xhr.<span class="prop">responseText</span>);
+  console.<span class="fn">log</span>(<span class="str">'Created! New ID:'</span>, result.<span class="prop">id</span>);
+  console.<span class="fn">log</span>(<span class="str">'Title:'</span>, result.<span class="prop">title</span>);
+};
+
+<span class="cm">// Stringify object → send in body</span>
+xhr.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({
+  title: <span class="str">'My first AJAX post'</span>,
+  body: <span class="str">'Learning XHR is important!'</span>,
+  userId: <span class="num">1</span>
+}));</pre>
+        <div class="code-output" id="xhr-post-out"></div>
+      </div>
+
+      <div class="section-head">XHR ready states</div>
+      <div class="cheatsheet">
+        <div class="cheatsheet-row"><div class="cs-key">readyState 0</div><div class="cs-val">UNSENT — object created, open() not called</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">readyState 1</div><div class="cs-val">OPENED — open() called, request configured</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">readyState 2</div><div class="cs-val">HEADERS_RECEIVED — server responded, headers in</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">readyState 3</div><div class="cs-val">LOADING — body being downloaded</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">readyState 4</div><div class="cs-val">DONE — complete. Read responseText now.</div></div>
+      </div>
+
+      <div class="section-head">XHR vs fetch() — why we moved on</div>
+      <table class="compare-table" style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <tr><th>Feature</th><th>XHR</th><th>fetch()</th></tr>
+        <tr><td>Syntax</td><td class="bad">Verbose, lots of boilerplate</td><td class="good">Clean and concise</td></tr>
+        <tr><td>Error handling</td><td class="bad">Callback-based, messy</td><td class="good">Promise-based, chainable</td></tr>
+        <tr><td>JSON</td><td class="bad">Manual JSON.parse required</td><td class="good">response.json() built in</td></tr>
+        <tr><td>Browser support</td><td class="good">All browsers including IE</td><td class="good">All modern browsers</td></tr>
+        <tr><td>Chaining requests</td><td class="bad">Callback hell</td><td class="good">Clean with async/await</td></tr>
+      </table>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(2)">← HTTP & JSON</button>
+        <span class="chapter-count">4 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(3)">fetch() API →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 5 ==================== -->
+    <div class="chapter" id="ch4">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 05 — Core APIs</div>
+        <h2 class="chapter-title">The <span>fetch()</span> API</h2>
+        <p class="chapter-desc">The modern standard. Promise-based, clean, and powerful. This is what you'll use in 95% of real projects.</p>
+      </div>
+
+      <div class="section-head">Basic GET with fetch</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">fetch-get.js</span><div class="code-actions"><button class="btn-run" onclick="runFetchGet()">▶ Run</button><button class="btn-copy" onclick="copyCode('fetch-get-code')">Copy</button></div></div>
+        <pre id="fetch-get-code"><span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/posts/1'</span>)
+  .<span class="fn">then</span>(response => {
+    <span class="cm">// response.ok = true if status is 200-299</span>
+    <span class="kw">if</span> (!response.<span class="prop">ok</span>) {
+      <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'HTTP error: '</span> + response.<span class="prop">status</span>);
+    }
+    <span class="kw">return</span> response.<span class="fn">json</span>(); <span class="cm">// Parse JSON body</span>
+  })
+  .<span class="fn">then</span>(post => {
+    console.<span class="fn">log</span>(<span class="str">'Title:'</span>, post.<span class="prop">title</span>);
+    console.<span class="fn">log</span>(<span class="str">'Body:'</span>, post.<span class="prop">body</span>.<span class="fn">slice</span>(<span class="num">0</span>,<span class="num">60</span>) + <span class="str">'...'</span>);
+  })
+  .<span class="fn">catch</span>(error => {
+    console.<span class="fn">log</span>(<span class="str">'Error:'</span>, error.<span class="prop">message</span>);
+  });</pre>
+        <div class="code-output" id="fetch-get-out"></div>
+      </div>
+
+      <div class="section-head">POST — sending data</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">fetch-post.js</span><div class="code-actions"><button class="btn-run" onclick="runFetchPost2()">▶ Run</button><button class="btn-copy" onclick="copyCode('fetch-post-code')">Copy</button></div></div>
+        <pre id="fetch-post-code"><span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/posts'</span>, {
+  method: <span class="str">'POST'</span>,
+  headers: {
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>
+  },
+  body: JSON.<span class="fn">stringify</span>({
+    title: <span class="str">'Learning fetch()'</span>,
+    body: <span class="str">'Much cleaner than XHR!'</span>,
+    userId: <span class="num">1</span>
+  })
+})
+  .<span class="fn">then</span>(res => res.<span class="fn">json</span>())
+  .<span class="fn">then</span>(data => {
+    console.<span class="fn">log</span>(<span class="str">'Created! ID:'</span>, data.<span class="prop">id</span>);
+    console.<span class="fn">log</span>(<span class="str">'Title:'</span>, data.<span class="prop">title</span>);
+  });</pre>
+        <div class="code-output" id="fetch-post-out"></div>
+      </div>
+
+      <div class="section-head">PUT — updating existing data</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">fetch-put.js</span><div class="code-actions"><button class="btn-run" onclick="runFetchPut()">▶ Run</button><button class="btn-copy" onclick="copyCode('fetch-put-code')">Copy</button></div></div>
+        <pre id="fetch-put-code"><span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/posts/1'</span>, {
+  method: <span class="str">'PUT'</span>,
+  headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+  body: JSON.<span class="fn">stringify</span>({
+    id: <span class="num">1</span>,
+    title: <span class="str">'Updated title'</span>,
+    body: <span class="str">'Updated body text'</span>,
+    userId: <span class="num">1</span>
+  })
+})
+  .<span class="fn">then</span>(res => res.<span class="fn">json</span>())
+  .<span class="fn">then</span>(data => console.<span class="fn">log</span>(<span class="str">'Updated:'</span>, data.<span class="prop">title</span>));</pre>
+        <div class="code-output" id="fetch-put-out"></div>
+      </div>
+
+      <div class="section-head">DELETE — removing data</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">fetch-delete.js</span><div class="code-actions"><button class="btn-run" onclick="runFetchDelete()">▶ Run</button></div></div>
+        <pre><span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/posts/1'</span>, {
+  method: <span class="str">'DELETE'</span>
+})
+  .<span class="fn">then</span>(res => {
+    <span class="cm">// 200 means deleted successfully</span>
+    console.<span class="fn">log</span>(<span class="str">'Deleted! Status:'</span>, res.<span class="prop">status</span>);
+  });</pre>
+        <div class="code-output" id="fetch-del-out"></div>
+      </div>
+
+      <div class="callout callout-warn"><span class="callout-icon">⚠️</span><span><strong>Big gotcha:</strong> fetch() only rejects (goes to .catch) for network failures — no internet, DNS errors, etc. A 404 or 500 response still <em>resolves</em>! You MUST check <code>response.ok</code> to detect server errors.</span></div>
+
+      <div class="section-head">Live playground — try fetch yourself</div>
+      <div class="playground">
+        <div class="playground-header">
+          <div class="playground-title"><div class="pg-dot"></div>fetch() Playground</div>
+          <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">live · jsonplaceholder.typicode.com</div>
+        </div>
+        <div class="playground-body">
+          <div class="input-row">
+            <select id="pg-method" style="width:90px">
+              <option>GET</option>
+              <option>POST</option>
+              <option>DELETE</option>
+            </select>
+            <input type="text" id="pg-url" value="https://jsonplaceholder.typicode.com/users/1" placeholder="Enter URL">
+            <button class="btn-primary" onclick="runPlayground()">Send Request</button>
+          </div>
+          <div id="pg-result" class="result-box">Results will appear here...</div>
+        </div>
+      </div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(3)">← XMLHttpRequest</button>
+        <span class="chapter-count">5 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(4)">async / await →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 6 ==================== -->
+    <div class="chapter" id="ch5">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 06 — Core APIs</div>
+        <h2 class="chapter-title">async / <span>await</span></h2>
+        <p class="chapter-desc">Write async code that reads like normal code. The cleanest way to work with fetch() and Promises.</p>
+      </div>
+
+      <div class="section-head">The problem with promise chains</div>
+      <p style="color:var(--text-muted)">When you need to make multiple requests that depend on each other, <code>.then()</code> chains get deeply nested and hard to read. async/await solves this.</p>
+
+      <div class="two-col">
+        <div>
+          <div style="font-size:11px;font-family:var(--font-mono);color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Promise chains (messy)</div>
+          <div class="code-wrap">
+            <pre style="font-size:12px">getUser(<span class="num">1</span>)
+  .<span class="fn">then</span>(user => {
+    <span class="kw">return</span> <span class="fn">getPosts</span>(user.<span class="prop">id</span>)
+      .<span class="fn">then</span>(posts => {
+        <span class="kw">return</span> <span class="fn">getComments</span>(
+          posts[<span class="num">0</span>].<span class="prop">id</span>
+        ).<span class="fn">then</span>(comments => {
+          <span class="cm">// 4 levels deep!</span>
+        });
+      });
+  });</pre>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-family:var(--font-mono);color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">async/await (clean)</div>
+          <div class="code-wrap">
+            <pre style="font-size:12px"><span class="kw">async function</span> <span class="fn">load</span>() {
+  <span class="kw">const</span> user = <span class="kw">await</span> <span class="fn">getUser</span>(<span class="num">1</span>);
+  <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">getPosts</span>(user.<span class="prop">id</span>);
+  <span class="kw">const</span> comments = <span class="kw">await</span> <span class="fn">getComments</span>(
+    posts[<span class="num">0</span>].<span class="prop">id</span>
+  );
+  <span class="cm">// Flat! Much easier to read</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head">async/await with fetch — the full pattern</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">async-await.js</span><div class="code-actions"><button class="btn-run" onclick="runAsyncAwait()">▶ Run</button><button class="btn-copy" onclick="copyCode('async-code')">Copy</button></div></div>
+        <pre id="async-code"><span class="cm">// async keyword makes function return a Promise</span>
+<span class="kw">async function</span> <span class="fn">fetchUser</span>(id) {
+  <span class="kw">try</span> {
+    <span class="cm">// await pauses HERE until fetch resolves</span>
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(
+      <span class="str">`https://jsonplaceholder.typicode.com/users/${id}`</span>
+    );
+
+    <span class="kw">if</span> (!response.<span class="prop">ok</span>) {
+      <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'User not found: '</span> + response.<span class="prop">status</span>);
+    }
+
+    <span class="cm">// await pauses again until JSON is parsed</span>
+    <span class="kw">const</span> user = <span class="kw">await</span> response.<span class="fn">json</span>();
+
+    console.<span class="fn">log</span>(<span class="str">'Name:'</span>, user.<span class="prop">name</span>);
+    console.<span class="fn">log</span>(<span class="str">'Email:'</span>, user.<span class="prop">email</span>);
+    console.<span class="fn">log</span>(<span class="str">'Company:'</span>, user.<span class="prop">company</span>.<span class="prop">name</span>);
+    console.<span class="fn">log</span>(<span class="str">'City:'</span>, user.<span class="prop">address</span>.<span class="prop">city</span>);
+    <span class="kw">return</span> user;
+
+  } <span class="kw">catch</span> (error) {
+    <span class="cm">// Catches BOTH network errors AND our thrown errors</span>
+    console.<span class="fn">log</span>(<span class="str">'Error:'</span>, error.<span class="prop">message</span>);
+  }
+}
+
+<span class="fn">fetchUser</span>(<span class="num">3</span>);</pre>
+        <div class="code-output" id="async-out"></div>
+      </div>
+
+      <div class="section-head">Parallel requests — Promise.all()</div>
+      <p style="color:var(--text-muted)">When requests don't depend on each other, run them simultaneously. <code>await</code>ing each one in sequence makes them run one-after-another, which is slow.</p>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">promise-all.js</span><div class="code-actions"><button class="btn-run" onclick="runPromiseAll()">▶ Run</button><button class="btn-copy" onclick="copyCode('promiseall-code')">Copy</button></div></div>
+        <pre id="promiseall-code"><span class="kw">async function</span> <span class="fn">loadDashboard</span>() {
+  console.<span class="fn">log</span>(<span class="str">'Firing all 3 requests simultaneously...'</span>);
+
+  <span class="cm">// All 3 requests fire AT THE SAME TIME</span>
+  <span class="kw">const</span> [usersRes, postsRes, todosRes] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    <span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/users?_limit=3'</span>),
+    <span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/posts?_limit=3'</span>),
+    <span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/todos?_limit=3'</span>)
+  ]);
+
+  <span class="kw">const</span> [users, posts, todos] = <span class="kw">await</span> Promise.<span class="fn">all</span>([
+    usersRes.<span class="fn">json</span>(),
+    postsRes.<span class="fn">json</span>(),
+    todosRes.<span class="fn">json</span>()
+  ]);
+
+  console.<span class="fn">log</span>(<span class="str">'Users:'</span>, users.<span class="prop">length</span>, <span class="str">'| first:'</span>, users[<span class="num">0</span>].<span class="prop">name</span>);
+  console.<span class="fn">log</span>(<span class="str">'Posts:'</span>, posts.<span class="prop">length</span>, <span class="str">'| first:'</span>, posts[<span class="num">0</span>].<span class="prop">title</span>.<span class="fn">slice</span>(<span class="num">0</span>,<span class="num">30</span>));
+  console.<span class="fn">log</span>(<span class="str">'Todos:'</span>, todos.<span class="prop">length</span>, <span class="str">'| first:'</span>, todos[<span class="num">0</span>].<span class="prop">title</span>.<span class="fn">slice</span>(<span class="num">0</span>,<span class="num">30</span>));
+}
+
+<span class="fn">loadDashboard</span>();</pre>
+        <div class="code-output" id="promiseall-out"></div>
+      </div>
+
+      <div class="callout callout-tip"><span class="callout-icon">💡</span><span><strong>Rule of thumb:</strong> If request B needs data from request A → sequential awaits. If A, B, C are independent → Promise.all(). Sequential is safe. Promise.all is fast.</span></div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(4)">← fetch() API</button>
+        <span class="chapter-count">6 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(5)">Error handling →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 7 ==================== -->
+    <div class="chapter" id="ch6">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 07 — Advanced</div>
+        <h2 class="chapter-title">Error <span>handling</span></h2>
+        <p class="chapter-desc">Production AJAX must handle every failure gracefully. Networks fail, servers crash, users have bad internet. Your code must be ready.</p>
+      </div>
+
+      <div class="section-head">The 3 types of failures you must handle</div>
+      <div class="cards">
+        <div class="card card-accent-red"><div class="card-title">Network error</div><div class="card-body">No internet connection, DNS failure, server unreachable. fetch() <em>rejects</em> its Promise. Caught by .catch() or try/catch.</div></div>
+        <div class="card card-accent-yellow"><div class="card-title">HTTP error (4xx / 5xx)</div><div class="card-body">Server responded, but with an error code. fetch() <em>resolves</em>! You must check response.ok or response.status yourself.</div></div>
+        <div class="card card-accent-purple"><div class="card-title">Parse error</div><div class="card-body">Server returned malformed JSON. response.json() rejects. Wrap in try/catch to handle.</div></div>
+      </div>
+
+      <div class="section-head">Complete error handling pattern</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">error-handling.js</span><div class="code-actions"><button class="btn-run" onclick="runErrorHandling()">▶ Run (404 intentional)</button><button class="btn-copy" onclick="copyCode('error-code')">Copy</button></div></div>
+        <pre id="error-code"><span class="kw">async function</span> <span class="fn">safeFetch</span>(url) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(url);
+
+    <span class="cm">// Handle HTTP errors manually (fetch doesn't throw!)</span>
+    <span class="kw">if</span> (!response.<span class="prop">ok</span>) {
+      <span class="kw">const</span> status = response.<span class="prop">status</span>;
+      <span class="kw">if</span> (status === <span class="num">404</span>) <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'Not found (404)'</span>);
+      <span class="kw">if</span> (status === <span class="num">401</span>) <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'Unauthorized. Log in first.'</span>);
+      <span class="kw">if</span> (status === <span class="num">500</span>) <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'Server crashed (500)'</span>);
+      <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'HTTP Error: '</span> + status);
+    }
+
+    <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+    console.<span class="fn">log</span>(<span class="str">'Success:'</span>, data.<span class="prop">name</span> || data.<span class="prop">title</span>);
+    <span class="kw">return</span> data;
+
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">if</span> (error <span class="kw">instanceof</span> <span class="obj">TypeError</span>) {
+      console.<span class="fn">log</span>(<span class="str">'Network error — no internet?'</span>);
+    } <span class="kw">else</span> {
+      console.<span class="fn">log</span>(<span class="str">'Error:'</span>, error.<span class="prop">message</span>);
+    }
+  }
+}
+
+<span class="cm">// Try a 404 URL</span>
+<span class="fn">safeFetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/posts/99999'</span>);</pre>
+        <div class="code-output" id="error-out"></div>
+      </div>
+
+      <div class="section-head">Loading / error / success UI states</div>
+      <p style="color:var(--text-muted)">Every real AJAX call needs 3 UI states. Never leave the user staring at nothing.</p>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">ui-states.js</span><div class="code-actions"><button class="btn-copy" onclick="copyCode('states-code')">Copy</button></div></div>
+        <pre id="states-code"><span class="kw">async function</span> <span class="fn">loadData</span>() {
+  <span class="cm">// 1. LOADING state — show spinner, hide previous results</span>
+  document.<span class="fn">getElementById</span>(<span class="str">'spinner'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'block'</span>;
+  document.<span class="fn">getElementById</span>(<span class="str">'content'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'none'</span>;
+  document.<span class="fn">getElementById</span>(<span class="str">'error'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'none'</span>;
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/data'</span>);
+    <span class="kw">if</span> (!res.<span class="prop">ok</span>) <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'Server error: '</span> + res.<span class="prop">status</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+    <span class="cm">// 2. SUCCESS state — hide spinner, show data</span>
+    document.<span class="fn">getElementById</span>(<span class="str">'spinner'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'none'</span>;
+    document.<span class="fn">getElementById</span>(<span class="str">'content'</span>).<span class="prop">innerHTML</span> = <span class="fn">renderData</span>(data);
+    document.<span class="fn">getElementById</span>(<span class="str">'content'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'block'</span>;
+
+  } <span class="kw">catch</span> (err) {
+    <span class="cm">// 3. ERROR state — hide spinner, show error message</span>
+    document.<span class="fn">getElementById</span>(<span class="str">'spinner'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'none'</span>;
+    document.<span class="fn">getElementById</span>(<span class="str">'error'</span>).<span class="prop">textContent</span> = err.<span class="prop">message</span>;
+    document.<span class="fn">getElementById</span>(<span class="str">'error'</span>).<span class="prop">style</span>.<span class="prop">display</span> = <span class="str">'block'</span>;
+  }
+}</pre>
+      </div>
+
+      <div class="section-head">Retry with exponential backoff</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">retry.js</span><div class="code-actions"><button class="btn-run" onclick="runRetry()">▶ Run</button><button class="btn-copy" onclick="copyCode('retry-code')">Copy</button></div></div>
+        <pre id="retry-code"><span class="kw">async function</span> <span class="fn">fetchWithRetry</span>(url, maxRetries = <span class="num">3</span>) {
+  <span class="kw">for</span> (<span class="kw">let</span> attempt = <span class="num">0</span>; attempt < maxRetries; attempt++) {
+    <span class="kw">try</span> {
+      <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url);
+      <span class="kw">if</span> (!res.<span class="prop">ok</span>) <span class="kw">throw new</span> <span class="obj">Error</span>(<span class="str">'Status: '</span> + res.<span class="prop">status</span>);
+      <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+      console.<span class="fn">log</span>(<span class="str">'Success on attempt'</span>, attempt + <span class="num">1</span>);
+      <span class="kw">return</span> data;
+
+    } <span class="kw">catch</span> (err) {
+      <span class="kw">const</span> isLast = attempt === maxRetries - <span class="num">1</span>;
+      <span class="kw">if</span> (isLast) <span class="kw">throw</span> err; <span class="cm">// Give up</span>
+
+      <span class="cm">// Exponential backoff: 500ms, 1s, 2s...</span>
+      <span class="kw">const</span> wait = <span class="num">500</span> * Math.<span class="fn">pow</span>(<span class="num">2</span>, attempt);
+      console.<span class="fn">log</span>(<span class="str">`Attempt ${attempt+1} failed. Retrying in ${wait}ms...`</span>);
+      <span class="kw">await new</span> <span class="obj">Promise</span>(r => <span class="fn">setTimeout</span>(r, wait));
+    }
+  }
+}
+
+<span class="fn">fetchWithRetry</span>(<span class="str">'https://jsonplaceholder.typicode.com/users/2'</span>)
+  .<span class="fn">then</span>(u => console.<span class="fn">log</span>(<span class="str">'Got user:'</span>, u.<span class="prop">name</span>))
+  .<span class="fn">catch</span>(e => console.<span class="fn">log</span>(<span class="str">'All retries failed:'</span>, e.<span class="prop">message</span>));</pre>
+        <div class="code-output" id="retry-out"></div>
+      </div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(5)">← async / await</button>
+        <span class="chapter-count">7 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(6)">Real patterns →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 8 ==================== -->
+    <div class="chapter" id="ch7">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 08 — Advanced</div>
+        <h2 class="chapter-title">Real-world <span>patterns</span></h2>
+        <p class="chapter-desc">AbortController, debounce, request caching, and Axios. The patterns used in production apps.</p>
+      </div>
+
+      <div class="section-head">AbortController — cancel stale requests</div>
+      <p style="color:var(--text-muted)">When a user types in a search box, a new request fires every keystroke. If the 1st request responds after the 5th, you show stale data. <code>AbortController</code> cancels the old one before firing a new one.</p>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">abort-controller.js</span><div class="code-actions"><button class="btn-run" onclick="runAbort()">▶ Run</button><button class="btn-copy" onclick="copyCode('abort-code')">Copy</button></div></div>
+        <pre id="abort-code"><span class="kw">let</span> controller = <span class="kw">null</span>;
+
+<span class="kw">async function</span> <span class="fn">search</span>(query) {
+  <span class="cm">// Cancel the previous in-flight request</span>
+  <span class="kw">if</span> (controller) {
+    controller.<span class="fn">abort</span>();
+    console.<span class="fn">log</span>(<span class="str">'Cancelled previous request'</span>);
+  }
+
+  controller = <span class="kw">new</span> <span class="obj">AbortController</span>();
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(
+      <span class="str">`https://jsonplaceholder.typicode.com/posts?_limit=2`</span>,
+      { signal: controller.<span class="prop">signal</span> }  <span class="cm">// link to controller</span>
+    );
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    console.<span class="fn">log</span>(<span class="str">`"${query}" → got ${data.<span class="prop">length</span>} results`</span>);
+
+  } <span class="kw">catch</span> (err) {
+    <span class="kw">if</span> (err.<span class="prop">name</span> === <span class="str">'AbortError'</span>) {
+      console.<span class="fn">log</span>(<span class="str">`"${query}" request aborted`</span>);
+    }
+  }
+}
+
+<span class="cm">// Simulate rapid user typing: only last one completes</span>
+<span class="fn">search</span>(<span class="str">'j'</span>);
+<span class="fn">search</span>(<span class="str">'ja'</span>);
+<span class="fn">search</span>(<span class="str">'jav'</span>);
+<span class="fn">search</span>(<span class="str">'java'</span>);</pre>
+        <div class="code-output" id="abort-out"></div>
+      </div>
+
+      <div class="section-head">Debounce — don't fire on every keystroke</div>
+      <p style="color:var(--text-muted)">Debouncing delays the request until the user <em>stops typing</em> for a set amount of time (e.g. 300ms). Prevents sending 10 requests for "javascript".</p>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">debounce.js</span><div class="code-actions"><button class="btn-copy" onclick="copyCode('debounce-code')">Copy</button></div></div>
+        <pre id="debounce-code"><span class="cm">// Utility function — reusable for any async task</span>
+<span class="kw">function</span> <span class="fn">debounce</span>(fn, delay) {
+  <span class="kw">let</span> timer;
+  <span class="kw">return function</span>(...args) {
+    <span class="fn">clearTimeout</span>(timer);
+    timer = <span class="fn">setTimeout</span>(() => fn(...args), delay);
+  };
+}
+
+<span class="cm">// Your actual search function</span>
+<span class="kw">async function</span> <span class="fn">searchAPI</span>(query) {
+  <span class="kw">if</span> (!query.<span class="prop">trim</span>()) <span class="kw">return</span>;
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/search?q=${query}`</span>);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="fn">renderResults</span>(data);
+}
+
+<span class="cm">// Fires ONLY 300ms after typing stops</span>
+<span class="kw">const</span> debouncedSearch = <span class="fn">debounce</span>(searchAPI, <span class="num">300</span>);
+
+<span class="cm">// Attach to input event</span>
+searchInput.<span class="fn">addEventListener</span>(<span class="str">'input'</span>, (e) => {
+  <span class="fn">debouncedSearch</span>(e.<span class="prop">target</span>.<span class="prop">value</span>);
+});</pre>
+      </div>
+
+      <div class="section-head">Simple request cache</div>
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">cache.js</span><div class="code-actions"><button class="btn-run" onclick="runCache()">▶ Run (notice 2nd call is instant)</button><button class="btn-copy" onclick="copyCode('cache-code')">Copy</button></div></div>
+        <pre id="cache-code"><span class="kw">const</span> cache = <span class="kw">new</span> <span class="obj">Map</span>();
+
+<span class="kw">async function</span> <span class="fn">cachedFetch</span>(url) {
+  <span class="kw">if</span> (cache.<span class="fn">has</span>(url)) {
+    console.<span class="fn">log</span>(<span class="str">'Cache HIT for:'</span>, url.<span class="fn">split</span>(<span class="str">'/'</span>).<span class="fn">pop</span>());
+    <span class="kw">return</span> cache.<span class="fn">get</span>(url);
+  }
+
+  console.<span class="fn">log</span>(<span class="str">'Cache MISS — fetching...'</span>);
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+  cache.<span class="fn">set</span>(url, data);
+  <span class="kw">return</span> data;
+}
+
+<span class="cm">// First call — fetches from network</span>
+<span class="kw">const</span> u1 = <span class="kw">await</span> <span class="fn">cachedFetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/users/1'</span>);
+console.<span class="fn">log</span>(<span class="str">'Got:'</span>, u1.<span class="prop">name</span>);
+
+<span class="cm">// Second call — returns from cache instantly</span>
+<span class="kw">const</span> u2 = <span class="kw">await</span> <span class="fn">cachedFetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/users/1'</span>);
+console.<span class="fn">log</span>(<span class="str">'Got again:'</span>, u2.<span class="prop">name</span>);</pre>
+        <div class="code-output" id="cache-out"></div>
+      </div>
+
+      <div class="section-head">Axios — the most popular AJAX library</div>
+      <div class="cards">
+        <div class="card card-accent-green"><div class="card-title">Auto JSON parsing</div><div class="card-body">No <code>res.json()</code> needed. Response data is in <code>response.data</code> directly.</div></div>
+        <div class="card card-accent-green"><div class="card-title">Throws on HTTP errors</div><div class="card-body">Unlike fetch(), Axios automatically throws for 4xx/5xx. Simplifies error handling.</div></div>
+        <div class="card card-accent-purple"><div class="card-title">Interceptors</div><div class="card-body">Run code before every request (add auth header) or after every response (log errors).</div></div>
+        <div class="card card-accent-yellow"><div class="card-title">Base URL & defaults</div><div class="card-body">Create an instance with a base URL and headers once. Every call inherits them.</div></div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar"><span class="code-label">axios-patterns.js</span><div class="code-actions"><button class="btn-copy" onclick="copyCode('axios-code')">Copy</button></div></div>
+        <pre id="axios-code"><span class="cm">// npm install axios</span>
+<span class="kw">import</span> axios <span class="kw">from</span> <span class="str">'axios'</span>;
+
+<span class="cm">// Create a reusable instance</span>
+<span class="kw">const</span> api = axios.<span class="fn">create</span>({
+  baseURL: <span class="str">'https://api.myapp.com'</span>,
+  timeout: <span class="num">5000</span>,
+  headers: { <span class="str">'Authorization'</span>: <span class="str">`Bearer ${token}`</span> }
+});
+
+<span class="cm">// GET — auto-parses JSON, data is in .data</span>
+<span class="kw">const</span> { data: users } = <span class="kw">await</span> api.<span class="fn">get</span>(<span class="str">'/users'</span>);
+
+<span class="cm">// POST — no need to stringify body</span>
+<span class="kw">await</span> api.<span class="fn">post</span>(<span class="str">'/users'</span>, { name: <span class="str">'Priya'</span>, email: <span class="str">'priya@x.com'</span> });
+
+<span class="cm">// Interceptor — add auth token to every request</span>
+api.interceptors.request.<span class="fn">use</span>(config => {
+  config.headers.Authorization = <span class="str">`Bearer ${getToken()}`</span>;
+  <span class="kw">return</span> config;
+});
+
+<span class="cm">// Interceptor — handle all errors globally</span>
+api.interceptors.response.<span class="fn">use</span>(
+  response => response,
+  error => {
+    <span class="kw">if</span> (error.response.<span class="prop">status</span> === <span class="num">401</span>) <span class="fn">redirectToLogin</span>();
+    <span class="kw">return</span> Promise.<span class="fn">reject</span>(error);
+  }
+);</pre>
+      </div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(6)">← Error handling</button>
+        <span class="chapter-count">8 / 9</span>
+        <button class="nav-btn-ch primary" onclick="nextChapter(7)">Projects & next steps →</button>
+      </div>
+    </div>
+
+    <!-- ==================== CHAPTER 9 ==================== -->
+    <div class="chapter" id="ch8">
+      <div class="chapter-header">
+        <div class="chapter-num">Chapter 09 — Finish line</div>
+        <h2 class="chapter-title">Projects & <span>next steps</span></h2>
+        <p class="chapter-desc">You know AJAX. Now cement it by building. Here are 5 projects ordered by difficulty, plus what to learn next.</p>
+      </div>
+
+      <div class="section-head">Build these — ordered easiest to hardest</div>
+
+      <div class="project-card">
+        <div class="project-num">Project 01 / Beginner</div>
+        <div class="project-title">User Card Fetcher</div>
+        <div class="project-desc">Build a page with a "Load User" button. On click, fetch a random user from <code>randomuser.me/api</code> and display their name, photo, email, and location. Add a loading spinner. Handle errors if the request fails.</div>
+        <div class="project-skills"><span class="project-skill">fetch()</span><span class="project-skill">async/await</span><span class="project-skill">DOM manipulation</span><span class="project-skill">loading states</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">Project 02 / Beginner</div>
+        <div class="project-title">Weather App</div>
+        <div class="project-desc">Text input for a city name. On submit, fetch weather from <code>wttr.in/{city}?format=j1</code> (free, no API key). Display temperature, conditions, humidity. Show "City not found" for invalid input.</div>
+        <div class="project-skills"><span class="project-skill">fetch()</span><span class="project-skill">form handling</span><span class="project-skill">error handling</span><span class="project-skill">JSON traversal</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">Project 03 / Intermediate</div>
+        <div class="project-title">Live Search with Debounce</div>
+        <div class="project-desc">Search box that queries <code>api.github.com/search/repositories?q=</code> as you type. Debounce at 400ms. Cancel previous requests with AbortController. Show repo name, stars, language. Paginate results.</div>
+        <div class="project-skills"><span class="project-skill">debounce</span><span class="project-skill">AbortController</span><span class="project-skill">pagination</span><span class="project-skill">real API</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">Project 04 / Intermediate</div>
+        <div class="project-title">CRUD Todo App</div>
+        <div class="project-desc">Full create-read-update-delete using <code>jsonplaceholder.typicode.com/todos</code>. Add todos (POST), list them (GET), mark complete (PATCH), delete (DELETE). Optimistic UI: update the screen immediately, sync with API in background.</div>
+        <div class="project-skills"><span class="project-skill">all HTTP methods</span><span class="project-skill">optimistic UI</span><span class="project-skill">PATCH</span><span class="project-skill">DELETE</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">Project 05 / Advanced</div>
+        <div class="project-title">Dashboard with Parallel Fetching</div>
+        <div class="project-desc">A data dashboard that loads 4-5 cards simultaneously using Promise.all(). Each card has its own loading/error state. Cache responses so switching between views is instant. Add a "Refresh" button with loading animation.</div>
+        <div class="project-skills"><span class="project-skill">Promise.all()</span><span class="project-skill">caching</span><span class="project-skill">parallel requests</span><span class="project-skill">retry logic</span></div>
+      </div>
+
+      <div class="section-head">What to learn next</div>
+      <div class="cards">
+        <div class="card card-accent-green"><div class="card-title">React Query / TanStack Query</div><div class="card-body">The standard for AJAX in React. Handles caching, refetching, loading states, and pagination automatically. Build on your fetch() knowledge.</div></div>
+        <div class="card card-accent-purple"><div class="card-title">WebSockets</div><div class="card-body">Two-way real-time communication. Server can push data to you. Used in chat, live scores, notifications. The next step after AJAX.</div></div>
+        <div class="card card-accent-pink"><div class="card-title">GraphQL</div><div class="card-body">Alternative to REST APIs. Request only the exact fields you need. Reduces over-fetching. Common in modern web apps.</div></div>
+        <div class="card card-accent-yellow"><div class="card-title">Service Workers</div><div class="card-body">Intercept all network requests. Enable offline caching and background sync. Foundation of Progressive Web Apps.</div></div>
+      </div>
+
+      <div class="section-head">AJAX quick-reference cheatsheet</div>
+      <div class="cheatsheet">
+        <div class="cheatsheet-row"><div class="cs-key">GET data</div><div class="cs-val">const r = await fetch(url); const d = await r.json();</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">POST data</div><div class="cs-val">fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(obj) })</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">Check for errors</div><div class="cs-val">if (!response.ok) throw new Error(response.status)</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">Parallel requests</div><div class="cs-val">const [a,b] = await Promise.all([fetch(url1), fetch(url2)])</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">Cancel request</div><div class="cs-val">const c = new AbortController(); fetch(url, {signal: c.signal}); c.abort();</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">Debounce</div><div class="cs-val">clearTimeout(t); t = setTimeout(() => apiFn(val), 300)</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">Catch network err</div><div class="cs-val">catch(e) { if(e instanceof TypeError) { /* no internet */ } }</div></div>
+        <div class="cheatsheet-row"><div class="cs-key">Catch abort</div><div class="cs-val">catch(e) { if(e.name === 'AbortError') { /* cancelled */ } }</div></div>
+      </div>
+
+      <div style="background:rgba(110,231,183,0.06);border:1px solid rgba(110,231,183,0.2);border-radius:12px;padding:24px;margin:24px 0;text-align:center">
+        <div style="font-family:var(--font-head);font-size:22px;font-weight:700;color:#fff;margin-bottom:8px">You've completed the course!</div>
+        <div style="font-size:14px;color:var(--text-muted);margin-bottom:20px">You now understand AJAX from the foundations up to real production patterns. Start building the projects above — that's where it truly clicks.</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-primary" onclick="goTo(0)" style="padding:10px 24px;font-size:13px">Review from start</button>
+        </div>
+      </div>
+
+      <div class="chapter-nav">
+        <button class="nav-btn-ch" onclick="goTo(7)">← Real patterns</button>
+        <span class="chapter-count">9 / 9</span>
+        <button class="nav-btn-ch" disabled>End of course</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let completed = new Set();
+  const totalChapters = 9;
+
+  function goTo(idx) {
+    document.querySelectorAll('.chapter').forEach(c => c.classList.remove('visible'));
+    document.getElementById('ch' + idx).classList.add('visible');
+    document.querySelectorAll('.nav-item').forEach((n,i) => {
+      n.classList.toggle('active', i === idx);
+    });
+    document.getElementById('mainArea').scrollTo(0, 0);
+  }
+
+  function nextChapter(current) {
+    completed.add(current);
+    document.querySelectorAll('.nav-item')[current].classList.add('done');
+    updateProgress();
+    goTo(current + 1);
+  }
+
+  function updateProgress() {
+    const pct = Math.round((completed.size / totalChapters) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = completed.size + ' of ' + totalChapters + ' chapters done';
+  }
+
+  function quiz(btn, correct, feedbackId) {
+    const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.disabled = true);
+    const fb = document.getElementById(feedbackId);
+    if (correct) {
+      btn.classList.add('correct');
+      fb.textContent = 'Correct! Well done.';
+      fb.className = 'quiz-feedback show ok';
+    } else {
+      btn.classList.add('wrong');
+      opts.forEach(o => { if (o.onclick && o.onclick.toString().includes('true')) o.classList.add('correct'); });
+      fb.textContent = 'Not quite — the highlighted answer is correct.';
+      fb.className = 'quiz-feedback show no';
+    }
+  }
+
+  function copyCode(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    navigator.clipboard.writeText(el.innerText).catch(() => {});
+  }
+
+  function showOut(id, text, cls) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'code-output show ' + (cls || '');
+  }
+
+  function runCode(codeId, outId) {
+    const lines = [];
+    const origLog = console.log;
+    console.log = (...args) => lines.push(args.join(' '));
+    try {
+      const jsonString = '{"id":1,"name":"Priya","city":"Chennai","active":true}';
+      const user = JSON.parse(jsonString);
+      lines.push('user.name → ' + user.name);
+      lines.push('user.city → ' + user.city);
+      lines.push('user.active → ' + user.active);
+      lines.push('typeof user → ' + typeof user);
+      const newObj = { name: 'Arjun', age: 24, skills: ['JS','CSS'] };
+      const jsonStr = JSON.stringify(newObj);
+      lines.push('stringified → ' + jsonStr);
+      lines.push('typeof jsonStr → ' + typeof jsonStr);
+    } finally { console.log = origLog; }
+    showOut(outId, lines.join('\n'), 'ok');
+  }
+
+  function runXHR() {
+    showOut('xhr-get-out', 'Fetching user...', '');
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://jsonplaceholder.typicode.com/users/1');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const user = JSON.parse(xhr.responseText);
+        showOut('xhr-get-out', 'Name: ' + user.name + '\nEmail: ' + user.email + '\nCity: ' + user.address.city, 'ok');
+      }
+    };
+    xhr.onerror = () => showOut('xhr-get-out', 'Network error!', 'err');
+    xhr.send();
+  }
+
+  function runXHRPost() {
+    showOut('xhr-post-out', 'Sending POST...', '');
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://jsonplaceholder.typicode.com/posts');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+      const r = JSON.parse(xhr.responseText);
+      showOut('xhr-post-out', 'Created! New ID: ' + r.id + '\nTitle: ' + r.title, 'ok');
+    };
+    xhr.send(JSON.stringify({ title: 'My first AJAX post', body: 'Learning XHR!', userId: 1 }));
+  }
+
+  function runFetchGet() {
+    showOut('fetch-get-out', 'Fetching...', '');
+    fetch('https://jsonplaceholder.typicode.com/posts/1')
+      .then(r => { if (!r.ok) throw new Error('HTTP error: ' + r.status); return r.json(); })
+      .then(p => showOut('fetch-get-out', 'Title: ' + p.title + '\nBody: ' + p.body.slice(0,80) + '...', 'ok'))
+      .catch(e => showOut('fetch-get-out', 'Error: ' + e.message, 'err'));
+  }
+
+  function runFetchPost2() {
+    showOut('fetch-post-out', 'Sending...', '');
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ title: 'Learning fetch()', body: 'Much cleaner!', userId: 1 })
+    }).then(r => r.json()).then(d => showOut('fetch-post-out', 'Created! ID: ' + d.id + '\nTitle: ' + d.title, 'ok'));
+  }
+
+  function runFetchPut() {
+    showOut('fetch-put-out', 'Updating...', '');
+    fetch('https://jsonplaceholder.typicode.com/posts/1', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id: 1, title: 'Updated title', body: 'Updated body', userId: 1 })
+    }).then(r => r.json()).then(d => showOut('fetch-put-out', 'Updated title: ' + d.title, 'ok'));
+  }
+
+  function runFetchDelete() {
+    showOut('fetch-del-out', 'Deleting...', '');
+    fetch('https://jsonplaceholder.typicode.com/posts/1', { method: 'DELETE' })
+      .then(r => showOut('fetch-del-out', 'Deleted! Status: ' + r.status + ' (200 = success)', 'ok'));
+  }
+
+  function runPlayground() {
+    const url = document.getElementById('pg-url').value.trim();
+    const method = document.getElementById('pg-method').value;
+    const res = document.getElementById('pg-result');
+    res.textContent = 'Sending ' + method + ' request...';
+    res.className = 'result-box loading';
+    fetch(url, { method })
+      .then(r => {
+        const status = r.status;
+        return r.json().then(d => ({ status, data: d }));
+      })
+      .then(({ status, data }) => {
+        res.className = 'result-box success';
+        res.textContent = 'Status: ' + status + '\n\n' + JSON.stringify(data, null, 2).slice(0, 600);
+      })
+      .catch(e => {
+        res.className = 'result-box error-state';
+        res.textContent = 'Error: ' + e.message;
+      });
+  }
+
+  async function runAsyncAwait() {
+    showOut('async-out', 'Fetching...', '');
+    try {
+      const r = await fetch('https://jsonplaceholder.typicode.com/users/3');
+      if (!r.ok) throw new Error('User not found: ' + r.status);
+      const u = await r.json();
+      showOut('async-out', 'Name: ' + u.name + '\nEmail: ' + u.email + '\nCompany: ' + u.company.name + '\nCity: ' + u.address.city, 'ok');
+    } catch(e) { showOut('async-out', 'Error: ' + e.message, 'err'); }
+  }
+
+  async function runPromiseAll() {
+    showOut('promiseall-out', 'Firing all 3 requests simultaneously...', '');
+    const [ur, pr, tr] = await Promise.all([
+      fetch('https://jsonplaceholder.typicode.com/users?_limit=3'),
+      fetch('https://jsonplaceholder.typicode.com/posts?_limit=3'),
+      fetch('https://jsonplaceholder.typicode.com/todos?_limit=3')
+    ]);
+    const [users, posts, todos] = await Promise.all([ur.json(), pr.json(), tr.json()]);
+    showOut('promiseall-out',
+      'Users: ' + users.length + ' | first: ' + users[0].name +
+      '\nPosts: ' + posts.length + ' | first: ' + posts[0].title.slice(0,35) +
+      '\nTodos: ' + todos.length + ' | first: ' + todos[0].title.slice(0,35), 'ok');
+  }
+
+  async function runErrorHandling() {
+    showOut('error-out', 'Fetching non-existent resource (99999)...', '');
+    try {
+      const r = await fetch('https://jsonplaceholder.typicode.com/posts/99999');
+      if (!r.ok) {
+        if (r.status === 404) throw new Error('Not found (404)');
+        throw new Error('HTTP Error: ' + r.status);
+      }
+      const d = await r.json();
+      showOut('error-out', 'Got: ' + d.title, 'ok');
+    } catch(e) {
+      showOut('error-out', 'Error caught: ' + e.message + '\n\nThis is expected! The URL does not exist.', 'err');
+    }
+  }
+
+  async function runRetry() {
+    showOut('retry-out', 'Starting fetch with retry logic...', '');
+    const lines = [];
+    async function fetchWithRetry(url, maxRetries = 3) {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('Status: ' + res.status);
+          const data = await res.json();
+          lines.push('Success on attempt ' + (attempt + 1));
+          return data;
+        } catch (err) {
+          const isLast = attempt === maxRetries - 1;
+          if (isLast) throw err;
+          const wait = 500 * Math.pow(2, attempt);
+          lines.push('Attempt ' + (attempt+1) + ' failed. Retrying in ' + wait + 'ms...');
+          await new Promise(r => setTimeout(r, wait));
+        }
+      }
+    }
+    try {
+      const u = await fetchWithRetry('https://jsonplaceholder.typicode.com/users/2');
+      lines.push('Got user: ' + u.name);
+      showOut('retry-out', lines.join('\n'), 'ok');
+    } catch(e) {
+      lines.push('All retries failed: ' + e.message);
+      showOut('retry-out', lines.join('\n'), 'err');
+    }
+  }
+
+  async function runAbort() {
+    const out = document.getElementById('abort-out');
+    out.textContent = '';
+    out.className = 'code-output show ok';
+    const log = m => { out.textContent += m + '\n'; };
+    let controller = null;
+    async function search(query) {
+      if (controller) { controller.abort(); log('Cancelled previous request'); }
+      controller = new AbortController();
+      try {
+        const r = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=2', { signal: controller.signal });
+        const data = await r.json();
+        log('"' + query + '" → got ' + data.length + ' results');
+      } catch(e) {
+        if (e.name === 'AbortError') log('"' + query + '" request aborted');
+      }
+    }
+    search('j'); search('ja'); search('jav'); search('java');
+  }
+
+  const _cache = new Map();
+  async function runCache() {
+    const out = document.getElementById('cache-out');
+    out.textContent = '';
+    out.className = 'code-output show ok';
+    const log = m => { out.textContent += m + '\n'; };
+    const url = 'https://jsonplaceholder.typicode.com/users/1';
+    async function cachedFetch(u) {
+      if (_cache.has(u)) { log('Cache HIT for: users/1'); return _cache.get(u); }
+      log('Cache MISS — fetching from network...');
+      const r = await fetch(u);
+      const d = await r.json();
+      _cache.set(u, d);
+      return d;
+    }
+    const u1 = await cachedFetch(url);
+    log('Got: ' + u1.name);
+    const u2 = await cachedFetch(url);
+    log('Got again: ' + u2.name + ' (instantly, from cache!)');
+  }
+</script>
+</body>
+</html>
